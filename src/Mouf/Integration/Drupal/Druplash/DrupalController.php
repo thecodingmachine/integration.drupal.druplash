@@ -1,4 +1,5 @@
 <?php
+namespace Mouf\Integration\Drupal\Druplash;
 
 /**
  * This class represents a Splash Controller that has been adapted to run correctly with Drupal.

@@ -1,4 +1,8 @@
 <?php
+namespace Mouf\Integration\Drupal\Druplash;
+
+use Mouf\Mvc\Splash\Services\SplashUtils;
+use Mouf\MoufManager;
 
 /**
  * Main class in charge of routing

@@ -1,4 +1,5 @@
 <?php
+namespace Mouf\Integration\Drupal\Druplash;
 
 /**
  * The Drupal Dynamic Block is a Mouf component that represent a block in Drupal.

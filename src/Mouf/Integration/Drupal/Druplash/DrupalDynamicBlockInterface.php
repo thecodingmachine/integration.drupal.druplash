@@ -1,4 +1,5 @@
 <?php
+namespace Mouf\Integration\Drupal\Druplash;
 
 /**
  * The Drupal Dynamic Block Interface is a Mouf interface that represents a block in Drupal.
