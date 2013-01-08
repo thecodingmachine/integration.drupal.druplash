@@ -1,6 +1,0 @@
-name = "Druplash"
-description = "Splash MVC integration module into Drupal"
-package = "Mouf"
-project = "Druplash"
-version = "7.x-2.0"
-core = 7.x

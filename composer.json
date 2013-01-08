@@ -3,7 +3,7 @@
     "description": "This module provides a MVC framework, right into Drupal, based on the Splash MVC framework (designed for Mouf-PHP).",
     "keywords": ["drupal", "mvc", "splash", "mouf"],
     "homepage": "https://github.com/thecodingmachine/integration.drupal.druplash",
-    "type": "drupal-plugin mouf-library",
+    "type": "mouf-library",
     "license": "MIT",
     "authors": [
         {
@@ -15,14 +15,12 @@
     "require": {
     	"php": ">=5.3.0",
         "composer/installers": "*",
+        "mouf/integration.drupal.druplash-drupalmodule": "7.0",
         "mouf/mvc.splash-common": "~4.0"
     },
     "autoload": {
         "psr-0": {
             "Mouf": "src/"
         }
-    },
-    "extra": {
-        "installer-name": "druplash"
     }
 }
