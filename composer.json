@@ -22,5 +22,10 @@
         "psr-0": {
             "Mouf": "src/"
         }
+    },
+    "extra": {
+        "installer-paths": {
+            "sites/all/modules/druplash/": "mouf/integration.drupal.druplash-drupalmodule"]
+        }
     }
 }
