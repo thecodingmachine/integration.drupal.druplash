@@ -1,0 +1,54 @@
+<?php
+require_once dirname(__FILE__).'/../../../../Mouf.php';
+
+
+function druplash_permission() {
+	return Druplash::getPermissions();
+}
+
+/**
+ * This is the login hook for druplash.
+ * Add Mouf information in user SESSION.
+ * 
+ */
+function druplash_user_login($edit, $account) {
+	Druplash::onUserLogin($edit, $account);
+}
+
+/**
+ * This is the logout hook for druplash.
+ * Remove Mouf information in user SESSION.
+ * 
+ */
+function druplash_user_logout($account) {
+	Druplash::onUserLogout($account);
+}
+
+/**
+ * This is the central hook for druplash.
+ * It acts as the controller by binding the paths to the controllers actions.
+ * 
+ */
+function druplash_menu() {
+	// Let's find the Drupal Controllers.
+	return Druplash::getDrupalMenus();
+}
+
+function druplash_execute_action($actions) {
+	return Druplash::executeAction($actions);
+}
+
+/**
+ * The hook called to dynamically add blocks to Drupal.
+ */
+function druplash_block_info() {
+	return Druplash::getDrupalBlocks();
+}
+
+/**
+ * The hook called to dynamically get the content of a block.
+ */
+function druplash_block_view($delta = '') {
+	return Druplash::getDrupalBlock($delta);
+}
+?>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package>
+	<displayName>Druplash - Drupal MVC framework based on Splash MVC</displayName>
+	<shortDescription>This module is in charge of integrating Drupal and the Splash MVC framework.</shortDescription>
+	<docUrl></docUrl>
+	<logo>logo.png</logo>
+	<doc root='doc'>
+		<page title="Installing Druplash" url="install.html" />
+		<page title="Druplash tutorial" url="tutorial.html" />
+		<page title="Ajax support" url="ajax.html" />
+		<page title="Dynamic blocks" url="blocks.html" />
+	</doc>	
+	<dependencies>
+		<dependency>
+			<group>mvc</group>
+			<name>splash-common</name>
+			<version>&gt;=3.3</version>
+		</dependency>
+		<dependency>
+			<group>security</group>
+			<name>rightsservice-splash</name>
+			<version>&gt;=3.0</version>
+		</dependency>
+		<dependency>
+			<group>security</group>
+			<name>userservice-splash</name>
+			<version>&gt;=3.0</version>
+		</dependency>
+		<dependency>
+			<group>utils/session</group>
+			<name>sessionmanager</name>
+			<version>&gt;=1.0</version>
+		</dependency>
+	</dependencies>
+	<requires>
+		<require>Druplash.php</require>
+		<require>DrupalController.php</require>
+		<require>DrupalDynamicBlockInterface.php</require>
+		<require>DrupalDynamicBlock.php</require>
+		<require>DrupalSessionManager.php</require>
+		<require>dao/DruplashUserDao.php</require>
+		<require>dao/DruplashRightDao.php</require>
+		<require>dao/bean/DruplashUserBean.php</require>
+		<require>service/DruplashRightService.php</require>
+		<require>service/DruplashPermissionDescriptor.php</require>
+	</requires>
+	<install>
+		<file>install.php</file>
+	</install>
+	<!--<adminRequires>
+		<require>drupalBootstrap.php</require>
+	</adminRequires>-->
+</package>

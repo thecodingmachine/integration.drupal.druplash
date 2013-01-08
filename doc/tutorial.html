@@ -1,0 +1,157 @@
+<h1>Druplash tutorial: how to build an application based on Drupal, using a MVC framework</h1>
+
+<p>Druplash is a MVC framework based on SplashMVC, that is directly integrated with Drupal. As a result, you can directly use an Object Oriented paradigm, with full MVC support inside your Drupal website.</p>
+
+<h2>Creating a controller</h2>
+
+<p>The first thing you will want to do in Druplash is to create your controller, to display a web page. This involve 4 steps:</p>
+
+<ol>
+<li>Step 1: Create the controller class, with the action</li>
+<li>Step 2: Include the class in the "required" PHP files</li>
+<li>Step 3: Create an instance of the class in Mouf</li>
+<li>Step 4: Clear Drupal's cache</li>
+</ol>
+
+<h3>Step 1: creating the controller class</h3>
+
+<p>You can create your controller class where you want inside your Drupal directory. However, to keep things clean, we will create a <code>/sites/all/custom</code> directory. In this directory, we will create 2 subdirectories:</p>
+<ul>
+<li><code>/controllers</code>: that will contain the controllers</li>
+<li><code>/views</code>: that will contain the views</li>
+</ul>
+
+<img src="images/directories.png" alt="" />
+
+<p>Now that the directories are in place, you can create your controller. In this exemple, we will call our controller "HomeController".</p>
+
+<pre class="brush: php">
+/**
+ * This controller will display the "Home".
+ *
+ * @Component
+ */
+class HomeController extends DrupalController {
+	
+	/**
+	 * The first page.
+	 * 
+	 * @Action
+	 * @URL mypage
+	 */
+	public function index() {
+		echo "Hello!";
+	}
+		
+	/**
+	 * A page with a parameter passed.
+	 * 
+	 * @Action
+	 * @URL detailpage
+	 */
+	public function details($id) {
+		echo "Mouf".$id;
+	}
+}
+</pre>
+
+<p> First thing you can see: the MyController class extends the "DrupalController" class provided by Drusplash. Also, it is a Mouf component, since we can read the "@Component" annotation in the PHPDoc comment of the class.</p>
+
+<p>The 2 methods (<em>index</em> and <em>details</em>) have @Action annotations in their comments. This means
+they can be accessed directly from the web. They also have a @URL annotation. The @URL annotation is used to know the URL of 
+the page.</p>
+
+<p>For instance, the URL of the first action will be:</p>
+<code>http://[server]/[drupal_directory]/mypage</code>
+
+<p>The action "details" takes 1 parameter: id. This means that the page needs the parameter "id" passed either in GET or POST.</p>
+
+<h3>Step 2: include the controller PHP file in Mouf</h3>
+
+<p>Since the controller is a Mouf component, it must be included, like any other Mouf component.</p>
+
+<p>To do this, apply the following steps:</p>
+<ul>
+<li>Log into the mouf interface: http://[server]/[drupal_directory]/mouf/</li>
+<li>Click the "Include PHP files" menu</li>
+<li>Click the "Add new file" and browse to your HomeController.php file</li>
+<li>Click the save button</li>
+</ul>
+
+<h3>Step 3: create an instance of the controller</h3>
+
+<p>So far, we have referenced the class in Mouf, but a class is useless if we do not create an instance of it.</p>
+
+<ul>
+<li>In the Mouf interface, click the "Create a new instance" menu</li>
+<li>Choose a name for your instance. For instance: "homeController".</li>
+<li>Select your class in the drop-down (HomeController)</li>
+<li>Click the "Create" button</li>
+</ul>
+
+<h3>Step 4: clear Drupal's cache and test</h3>
+
+<p>Now, our instance is created. All that remains to do is to clear the Drupal cache (in the "Performance" section of Drupal admin).</p>
+<p>Finally, we can test. Go to <code>http://[server]/[drupal_directory]/mypage</code>. You should see a page with "Hello!" displayed.</p>
+
+<h3>Step 5: Setting the page title</h3>
+
+<p>In order to set the page title, you have 2 possible methods: using the getTitle method or using the @Title annotation.</p>
+
+<p>Here is an example using the @Title annotation:</p>
+
+<pre class="brush: php">
+class HomeController extends DrupalController {
+	...
+
+	/**
+	 * A sample page.
+	 * 
+	 * @URL detailpage
+	 * @Title This is my page title.
+	 */
+	public function details($id) {
+		// Here is my page.
+	}
+}
+</pre>
+
+<p>And here is an example using the setTitle method:</p>
+
+<pre class="brush: php">
+class HomeController extends DrupalController {
+	...
+
+	/**
+	 * A sample page.
+	 * 
+	 * @URL detailpage
+	 */
+	public function details($id) {
+		$this->setTitle("My Title");
+		// Here is my page.
+	}
+}
+</pre>
+
+<p>If you can choose between setTitle and @Title, please choose the annotation.
+Indeed, some blocks relying an the page title might be displayed before you enter in the controller's method.
+For instance, if you have a bread-crumb relying on the page's title, the @Title might be your only option,
+since the breadcrumb might be called before the setTitle function.</p>
+
+<h3>Step 6: overrding the Drupal Menu settings</h3>
+<p>Sometimes, you may want to set additional settings into drupal's menu settings.</p>
+<p>To do so, there is a @DrupalMenuSettings annotation defined by a JSON object in value. The structure of the object will map the menu item structure :</p>
+<pre class="brush: php">
+	
+	/**
+	 * @URL my/url
+	 * @Action
+	 * @DrupalMenuSettings{"type":"MENU_LOCAL_TASK","weight":10}
+	 */
+	public function myAction($jour = null, $typeCollect = null, $fonction = null) {
+		...
+	}
+	
+</pre>
+<p><b>Example</b>, you may want your Action to be represented as a drupal Tab. By default, the menu type is MENU_VISIBLE_IN_BREADCRUMB, that correponds to a simple URL. In order to get a Drupal tab for this actions, you should use a menu type MENU_LOCAL_TASK or MENU_DEFAULT_LOCAL_TASK.</p> 

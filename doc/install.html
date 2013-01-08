@@ -1,0 +1,29 @@
+<h1>Installing Druplash</h1>
+
+<p>Druplash is a component enabling the integration of Mouf and Splash MVC framework with Drupal.</p>
+<p>In order to set-up your development environment, you will need to install first Mouf, then Drupal, then enable the required modules.</p>
+
+<p>Druplash v1.0 integrates with Drupal 6.</p>
+<p>Druplash v7.x-1.x integrates with Drupal 7.</p>
+
+<h2>Step 1: installing Mouf</h2>
+
+<p>Start by performing a normal Mouf install. The installation steps are described in the <a href="http://www.mouf-php.com/install">Mouf install guide (TOTO check this link)</a>.</p>
+
+<h2>Step 2: installing Drupal</h2>
+
+<p>In the directory that contains Mouf, <a href="http://drupal.org/">install Drupal</a>.</p>
+
+<h2>Step 3: download and enable Druplash package in Mouf</h2>
+
+<p>Open the Mouf interface (<em>http://[your_server]/[app_directory]/mouf</em>)</p>
+<p>Click on <em>Download packages</em></p>
+<p>Enable the <strong>Druplash</strong> package matching your Drupal version.</p>
+
+<h2>Step 4: Install the Drupal modules</h2>
+
+<p>In the previous step, we installed the Mouf packages. Now, we must install the Drupal modules.
+Druplash has a Drupal module. Druplash module can be found in <code>plugins/integration/drupal/druplash/[your druplah version]/drupal_module</code></p>
+
+<p>Both modules should be copied in the Drupal directory <code>/sites/all/modules</code>.</p>
+<p>Finally, you need to enable those modules in Drupal. Log-in as administrator in Drupal, go to the <em>module administration page</em> and enable Druplash.</p>
