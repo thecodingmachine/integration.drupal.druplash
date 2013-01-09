@@ -1,6 +1,21 @@
 <?php
 namespace Mouf\Integration\Drupal\Druplash;
 
+use Mouf\Mvc\Splash\Services\FilterUtils;
+
+use Mouf\Reflection\MoufReflectionClass;
+
+use Mouf\Reflection\MoufReflectionMethod;
+
+use Mouf\Html\HtmlElement\Scopable;
+
+use Mouf\Html\Template\TemplateInterface;
+
+use Mouf\Html\HtmlElement\HtmlElementInterface;
+
+use Mouf\Mvc\Splash\Controllers\Controller;
+use Exception;
+
 /**
  * This class represents a Splash Controller that has been adapted to run correctly with Drupal.
  * This is a usual controller expect it has a few utility functions added, like "addContentFile", "addContentText", "addContentFunction", etc...
@@ -37,7 +52,7 @@ abstract class DrupalController extends Controller {
 	
 	/**
 	 * Adds some content to the main panel by calling the function passed in parameter.
-	 * @return SplashTemplate
+	 * @return TemplateInterface
 	 */
 	public function addContentFunction($function) {
 		$arguments = func_get_args();
@@ -53,7 +68,7 @@ abstract class DrupalController extends Controller {
 
 	/**
 	 * Adds some content to the main panel by displaying the text passed in parameter.
-	 * @return SplashTemplate
+	 * @return TemplateInterface
 	 */
 	public function addContentText($text) {
 		$content = new HtmlString();
@@ -65,7 +80,7 @@ abstract class DrupalController extends Controller {
 	/**
 	 * Adds some content to the main panel by displaying the text in the file passed in parameter.
 	 * The scope is the object that will refer the $this.
-	 * @return SplashTemplate
+	 * @return TemplateInterface
 	 */
 	public function addContentFile($fileName, Scopable $scope = null) {
 		$content = new HtmlFromFile();
@@ -84,7 +99,7 @@ abstract class DrupalController extends Controller {
 	 * Adds an object extending the HtmlElementInterface interface to the content of the page.
 	 *
 	 * @param HtmlElementInterface $element
-	 * @return SplashTemplate
+	 * @return TemplateInterface
 	 */
 	public function addContentHtmlElement(HtmlElementInterface $element) {
 		$this->content[] = $element;
@@ -93,7 +108,7 @@ abstract class DrupalController extends Controller {
 	
 	/**
 	 * Adds some content to the <head> tag by calling the function passed in parameter.
-	 * @return SplashTemplate
+	 * @return TemplateInterface
 	 */
 	public function addHeadFunction($function) {
 		$arguments = func_get_args();
@@ -109,7 +124,7 @@ abstract class DrupalController extends Controller {
 
 	/**
 	 * Adds some content to the <head> tag by displaying the text passed in parameter.
-	 * @return SplashTemplate
+	 * @return TemplateInterface
 	 */
 	public function addHeadText($text) {
 		$content = new HtmlString();
@@ -121,7 +136,7 @@ abstract class DrupalController extends Controller {
 	/**
 	 * Adds some content to the <head> tag by displaying the text in the file passed in parameter.
 	 * The scope is the object that will refer the $this.
-	 * @return SplashTemplate
+	 * @return TemplateInterface
 	 */
 	public function addHeadFile($fileName, Scopable $scope = null) {
 		$content = new HtmlFromFile();
@@ -136,7 +151,7 @@ abstract class DrupalController extends Controller {
 	 * Adds an object extending the HtmlElementInterface interface to the head of the template.
 	 *
 	 * @param HtmlElementInterface $element
-	 * @return SplashTemplate
+	 * @return TemplateInterface
 	 */
 	public function addHeadHtmlElement(HtmlElementInterface $element) {
 		$this->head[] = $element;
@@ -176,7 +191,7 @@ abstract class DrupalController extends Controller {
 	 * Sets the title of the webpage.
 	 * It also sets the title in the template.
 	 * 
-	 * @param $title
+	 * @param string $title
 	 */
 	public function setTitle($title) {
 		drupal_set_title($title);

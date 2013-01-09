@@ -1,6 +1,12 @@
 <?php
 namespace Mouf\Integration\Drupal\Druplash;
 
+use Mouf\Reflection\MoufPhpDocComment;
+
+use Mouf\Reflection\MoufReflectionProxy;
+
+use Mouf\Mvc\Splash\Utils\SplashException;
+
 use Mouf\Mvc\Splash\Services\SplashUtils;
 use Mouf\MoufManager;
 
@@ -132,7 +138,7 @@ class Druplash {
 	public static function getDrupalBlocks() {
 		$moufManager = MoufManager::getMoufManager();
 		
-		$instanceNames = MoufReflectionProxy::getInstances("DrupalDynamicBlockInterface", false);
+		$instanceNames = MoufReflectionProxy::getInstances("Mouf\\Integration\\Drupal\\Druplash\\DrupalDynamicBlockInterface", false);
 		
 		$blocks = array();
 		
