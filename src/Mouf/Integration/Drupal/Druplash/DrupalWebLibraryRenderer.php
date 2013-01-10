@@ -1,5 +1,9 @@
 <?php
-namespace Mouf\Html\Utils\WebLibraryManager;
+namespace Mouf\Integration\Drupal\Druplash;
+
+use Mouf\Html\Utils\WebLibraryManager\WebLibraryInterface;
+
+use Mouf\Html\Utils\WebLibraryManager\WebLibraryRendererInterface;
 
 /**
  * The DrupalWebLibraryRenderer class is the Drupal way of adding JS ans CSS files.

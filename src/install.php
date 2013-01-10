@@ -34,8 +34,8 @@ if ($drupalTemplateDescriptor->getProperty("contentBlock") == null) {
 }
 
 $webLibraryManager = $moufManager->getInstanceDescriptor('defaultWebLibraryManager');
-if ($webLibraryManager && $template->getProperty('webLibraryManager')->getValue() == null) {
-	$template->getProperty('webLibraryManager')->setValue($webLibraryManager);
+if ($webLibraryManager && $drupalTemplateDescriptor->getProperty('webLibraryManager')->getValue() == null) {
+	$drupalTemplateDescriptor->getProperty('webLibraryManager')->setValue($webLibraryManager);
 }
 
 // Let's rewrite the MoufComponents.php file to save the component

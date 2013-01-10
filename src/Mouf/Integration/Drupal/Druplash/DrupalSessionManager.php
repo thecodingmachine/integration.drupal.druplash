@@ -1,6 +1,8 @@
 <?php
 namespace Mouf\Integration\Drupal\Druplash;
 
+use Mouf\Utils\Sesssion\SessionManager\SessionManagerInterface;
+
 /**
  * This class is used to start a Drupal session when we arenot in the Drupal scope.
  * 

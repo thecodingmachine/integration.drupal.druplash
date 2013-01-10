@@ -1,6 +1,8 @@
 <?php
 namespace Mouf\Integration\Drupal\Druplash;
 
+use Mouf\Html\HtmlElement\Scopable;
+
 use Mouf\Html\HtmlElement\HtmlBlock;
 
 /**
