@@ -16,6 +16,7 @@
     	"php": ">=5.3.0",
         "composer/installers": "*",
         "mouf/integration.drupal.druplash-drupalmodule": "7.0.*",
+        "mouf/html.template.templateinterface": "~2.0",
         "mouf/mvc.splash-common": "~4.0"
     },
     "autoload": {
