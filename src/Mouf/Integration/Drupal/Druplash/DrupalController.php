@@ -206,7 +206,7 @@ abstract class DrupalController extends Controller {
 		// Default action is "defaultAction" or "index"
 		
 		if (empty($method)) {
-			// Support for both defaultAction, and if not foudn "index" method.
+			// Support for both defaultAction, and if not found "index" method.
 			if (method_exists($this,"defaultAction")) {
 				$method = "defaultAction";
 			} else {

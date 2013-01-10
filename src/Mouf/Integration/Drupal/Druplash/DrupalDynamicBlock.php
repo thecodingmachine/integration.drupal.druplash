@@ -1,6 +1,8 @@
 <?php
 namespace Mouf\Integration\Drupal\Druplash;
 
+use Mouf\Html\HtmlElement\HtmlBlock;
+
 /**
  * The Drupal Dynamic Block is a Mouf component that represent a block in Drupal.
  * When you create an instance of the DrupalDynamicBlock, it directly appears in Drupal, as a block.
@@ -10,7 +12,7 @@ namespace Mouf\Integration\Drupal\Druplash;
  * @author David
  * @Component
  */
-class DrupalDynamicBlock implements DrupalDynamicBlockInterface, Scopable {
+class DrupalDynamicBlock extends HtmlBlock implements DrupalDynamicBlockInterface, Scopable {
 	
 	/**
 	 * The block name, as displayed in Drupal's interface.
@@ -183,71 +185,9 @@ class DrupalDynamicBlock implements DrupalDynamicBlockInterface, Scopable {
 	 * @var string
 	 */
 	public function getContent() {
-		ob_start();
-		if (!empty($this->content)) {
-			foreach ($this->content as $element) {
-				$element->toHtml();
-			}
-		}
-		return ob_get_clean();
-	}
-	
-/**
-	 * Adds some content to the main panel by calling the function passed in parameter.
-	 * @return SplashTemplate
-	 */
-	public function addContentFunction($function) {
-		$arguments = func_get_args();
-		// Remove the first argument
-		array_shift($arguments);
-
-		$content = new HtmlFromFunction();
-		$content->functionPointer = $function;
-		$content->parameters = $arguments;
-		$this->content[] = $content;
-		return $this;
+		return $this->getHtml();
 	}
 
-	/**
-	 * Adds some content to the main panel by displaying the text passed in parameter.
-	 * @return SplashTemplate
-	 */
-	public function addContentText($text) {
-		$content = new HtmlString();
-		$content->htmlString = $text;
-		$this->content[] = $content;
-		return $this;
-	}
-	
-	/**
-	 * Adds some content to the main panel by displaying the text in the file passed in parameter.
-	 * The scope is the object that will refer the $this.
-	 * @return SplashTemplate
-	 */
-	public function addContentFile($fileName, Scopable $scope = null) {
-		$content = new HtmlFromFile();
-		$content->fileName = $fileName;
-		if ($scope != null) {
-			$content->scope = $scope;
-		} else {
-			$content->scope = $this;
-		}
-		$this->content[] = $content;
-		
-		return $this;
-	}
-	
-	/**
-	 * Adds an object extending the HtmlElementInterface interface to the content of the page.
-	 *
-	 * @param HtmlElementInterface $element
-	 * @return SplashTemplate
-	 */
-	public function addContentHtmlElement(HtmlElementInterface $element) {
-		$this->content[] = $element;
-		return $this;
-	}
-	
 	/**
 	 * Inludes the file (useful to load a view inside the Controllers scope).
 	 *

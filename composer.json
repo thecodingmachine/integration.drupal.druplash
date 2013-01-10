@@ -26,6 +26,14 @@
     "extra": {
         "installer-paths": {
             "sites/all/modules/druplash/": "mouf/integration.drupal.druplash-drupalmodule"
-        }
+        },
+        "mouf": {
+	     	"install": [
+				{
+					"type": "file",
+		    		"file": "src/install.php"
+				}
+			]
+		}
     }
 }
