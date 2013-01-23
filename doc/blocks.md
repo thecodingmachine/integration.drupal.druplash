@@ -18,9 +18,9 @@ controller, you can create a "DrupalDynamicBlock" instance in Mouf.
 Go to *Menu > Instances > Create a new instance*. Select the "DrupalDynamicBlock" and name it
 'myDynamicBlock'. As you can see, a dynamic block contains a number of parameters that are all explained in the page. 
 The parameters you should care about are:
- - *name:* the name of the Druplash block, as displayed in the Drupal block administration screen
- - *subject:* the title of the block (it will be displayed each time the block is displayed)
- - *content:* you can put here any instance extending the HtmlElementInterface class (an element
+- *name:* the name of the Druplash block, as displayed in the Drupal block administration screen
+- *subject:* the title of the block (it will be displayed each time the block is displayed)
+- *content:* you can put here any instance extending the HtmlElementInterface class (an element
    extending the HtmlElementInterface can be displayed in HTML). However, there are easier ways to use the block
    as we will see.
 
