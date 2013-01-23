@@ -1,10 +1,12 @@
-<h1>Druplash tutorial: how to build an application based on Drupal, using a MVC framework</h1>
+Druplash tutorial: how to build an application based on Drupal, using a MVC framework
+=====================================================================================
 
-<p>Druplash is a MVC framework based on SplashMVC, that is directly integrated with Drupal. As a result, you can directly use an Object Oriented paradigm, with full MVC support inside your Drupal website.</p>
+Druplash is a MVC framework based on SplashMVC, that is directly integrated with Drupal. As a result, you can directly use an Object Oriented paradigm, with full MVC support inside your Drupal website.
 
-<h2>Creating a controller</h2>
+Creating a controller
+---------------------
 
-<p>The first thing you will want to do in Druplash is to create your controller, to display a web page. This involve 4 steps:</p>
+The first thing you will want to do in Druplash is to create your controller, to display a web page. This involve 4 steps:
 
 <ol>
 <li>Step 1: Create the controller class, with the action</li>

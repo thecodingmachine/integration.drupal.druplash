@@ -35,7 +35,25 @@
 					"type": "file",
 		    		"file": "src/install.php"
 				}
-			]
+			],
+			"doc": [
+	    		{
+	    			"title": "Installing Druplash",
+	    			"url": "doc/install.md"
+	    		},
+	    		{
+	    			"title": "Druplash tutorial",
+	    			"url": "doc/tutorial.md"
+	    		},
+	    		{
+	    			"title": "Ajax support",
+	    			"url": "doc/ajax.md"
+	    		},
+	    		{
+	    			"title": "Dynamic blocks",
+	    			"url": "doc/blocks.md"
+	    		}
+	    	]
 		}
     }
 }
