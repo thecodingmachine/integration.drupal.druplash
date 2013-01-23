@@ -1,6 +1,12 @@
 <?php
 namespace Mouf\Integration\Drupal\Druplash;
 
+use Mouf\Reflection\MoufReflectionMethod;
+
+use Mouf\Mvc\Splash\Services\FilterUtils;
+
+use Mouf\Reflection\MoufReflectionClass;
+
 use Mouf\Reflection\MoufPhpDocComment;
 
 use Mouf\Reflection\MoufReflectionProxy;
@@ -9,6 +15,8 @@ use Mouf\Mvc\Splash\Utils\SplashException;
 
 use Mouf\Mvc\Splash\Services\SplashUtils;
 use Mouf\MoufManager;
+use Mouf;
+use Exception;
 
 /**
  * Main class in charge of routing
@@ -127,7 +135,81 @@ class Druplash {
 		}
 		
 		$controller = MoufManager::getMoufManager()->getInstance($action['instance']);
-		return $controller->callAction($action['method']);
+		return self::callAction($controller, $action['method']);
+	}
+	
+	protected static function callAction($controller, $method) {
+		// Default action is "defaultAction" or "index"
+		
+		if (empty($method)) {
+			// Support for both defaultAction, and if not found "index" method.
+			if (method_exists($this,"defaultAction")) {
+				$method = "defaultAction";
+			} else {
+				$method = "index";
+			}
+		}
+		
+		if (method_exists($controller,$method)) {
+			// Ok, is this method an action?
+			$refClass = new MoufReflectionClass(get_class($controller));
+			// FIXME: the analysis should be performed during getDrupalMenus for performance.
+			$refMethod = $refClass->getMethod($method);    // $refMethod is an instance of MoufReflectionMethod
+		
+			try {
+				$filters = FilterUtils::getFilters($refMethod, $controller);
+		
+				// Apply filters
+				for ($i=count($filters)-1; $i>=0; $i--) {
+					$filters[$i]->beforeAction();
+				}
+		
+				// Ok, now, let's analyse the parameters.
+				$argsArray = self::mapParameters($refMethod);
+				
+				ob_start();
+				try {
+					echo call_user_func_array(array($controller,$method), $argsArray);
+				} catch (Exception $e) {
+					ob_end_clean();
+					throw $e;
+				}
+				/*foreach ($this->content as $element) {
+					$element->toHtml();
+				}*/
+				$drupalTemplate = Mouf::getDrupalTemplate();
+				$drupalTemplate->getContentBlock()->toHtml();
+				$result = ob_get_clean();
+				
+				
+				// Apply filters
+				for ($i=count($filters)-1; $i>=0; $i--) {
+					$filters[$i]->afterAction();
+				}
+		
+				// Now, let's see if we must output everything in the template or out the template.
+				
+				if ($drupalTemplate->isDisplayTriggered()) {
+					return $result;
+				} else {
+					echo $result;
+				}
+		
+			}
+			catch (Exception $e) {
+				// FIXME
+				return $this->handleException($e);
+			}
+		} else {
+			// "Method Not Found";
+			//$debug = MoufManager::getMoufManager()->getInstance("splash")->debugMode;
+			// FIXME: $debug non disponible car "splash" instance n'exite pas dans Drupal
+			//self::FourOFour("404.wrong.method", $debug);
+			
+			// FIXME
+			self::FourOFour("404.wrong.method", true);
+			exit;
+		}
 	}
 	
 	/**
@@ -220,6 +302,74 @@ class Druplash {
 		} else {
 			return array();
 		}
+	}
+	
+	/**
+	 * Analyses the method, the annotation parameters, and returns an array to be passed to the method.
+	 * TODO: optimize, remove mapParameters and use preprocessed values
+	 */
+	private static function mapParameters(MoufReflectionMethod $refMethod) {
+		$parameters = $refMethod->getParameters();
+	
+		// Let's analyze the @param annotations.
+		$paramAnnotations = $refMethod->getAnnotations('param');
+	
+		$values = array();
+		foreach ($parameters as $parameter) {
+			// First step: let's see if there is an @param annotation for that parameter.
+			$found = false;
+			if ($paramAnnotations != null) {
+				foreach ($paramAnnotations as $annotation) {
+					/* @var paramAnnotation $annotation */
+	
+					if ($annotation->getParameterName() == $parameter->getName()) {
+						$value = $annotation->getValue();
+	
+						if ($value !== null) {
+							$values[] = $value;
+						} else {
+							if ($parameter->isDefaultValueAvailable()) {
+								$values[] = $parameter->getDefaultValue();
+							} else {
+								// No default value and no parameter... this is an error!
+								// TODO: we could provide a special annotation to redirect on another action on error.
+								$application_exception = new ApplicationException();
+								$application_exception->setTitle("controller.incorrect.parameter.title",$refMethod->getDeclaringClass()->getName(),$refMethod->getName(),$parameter->getName());
+								$application_exception->setMessage("controller.incorrect.parameter.text",$refMethod->getDeclaringClass()->getName(),$refMethod->getName(),$parameter->getName());
+								throw $application_exception;
+							}
+						}
+						$found = true;
+						break;
+					}
+				}
+			}
+	
+			if (!$found) {
+				// There is no annotation for the parameter.
+				// Let's map it to the request.
+				$paramValue = get($parameter->getName());
+	
+				if ($paramValue !== false) {
+					$values[] = $paramValue;
+				} else {
+					if ($parameter->isDefaultValueAvailable()) {
+						$values[] = $parameter->getDefaultValue();
+					} else {
+						// No default value and no parameter... this is an error!
+						// TODO: we could provide a special annotation to redirect on another action on error.
+						$application_exception = new ApplicationException();
+						$application_exception->setTitle("controller.incorrect.parameter.title",$refMethod->getDeclaringClass()->getName(),$refMethod->getName(),$parameter->getName());
+						$application_exception->setMessage("controller.incorrect.parameter.text",$refMethod->getDeclaringClass()->getName(),$refMethod->getName(),$parameter->getName());
+						throw $application_exception;
+					}
+				}
+			}
+	
+	
+		}
+	
+		return $values;
 	}
 }
 

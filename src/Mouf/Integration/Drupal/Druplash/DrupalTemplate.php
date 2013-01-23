@@ -1,6 +1,8 @@
 <?php
 namespace Mouf\Integration\Drupal\Druplash;
 
+use Mouf\Html\Utils\WebLibraryManager\WebLibraryManager;
+
 use Mouf\Html\HtmlElement\HtmlBlock;
 use Mouf\Html\Template\TemplateInterface;
 

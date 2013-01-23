@@ -29,7 +29,7 @@ $drupalWebLibraryManager->setName("defaultWebLibraryRenderer");
 $contentBlockDescriptor = InstallUtils::getOrCreateInstance("block.content", "Mouf\\Html\\HtmlElement\\HtmlBlock", $moufManager);
 
 $drupalTemplateDescriptor = InstallUtils::getOrCreateInstance("drupalTemplate", "Mouf\\Integration\\Drupal\\Druplash\\DrupalTemplate", $moufManager);
-if ($drupalTemplateDescriptor->getProperty("contentBlock") == null) {
+if ($drupalTemplateDescriptor->getProperty("contentBlock")->getValue() == null) {
 	$drupalTemplateDescriptor->getProperty("contentBlock")->setValue($contentBlockDescriptor);
 }
 
