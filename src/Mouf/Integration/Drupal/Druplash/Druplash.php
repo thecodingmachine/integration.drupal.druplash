@@ -348,9 +348,9 @@ class Druplash {
 			if (!$found) {
 				// There is no annotation for the parameter.
 				// Let's map it to the request.
-				$paramValue = get($parameter->getName());
+				$paramValue = isset($_REQUEST[$parameter->getName()])?$_REQUEST[$parameter->getName()]:null;
 	
-				if ($paramValue !== false) {
+				if ($paramValue !== null) {
 					$values[] = $paramValue;
 				} else {
 					if ($parameter->isDefaultValueAvailable()) {
