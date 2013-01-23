@@ -105,8 +105,7 @@ Now, we must fill the *template* and the *content* properties with instances.
  
 After configuration, you should see something similar to this:
 
-
-TODO
+![Controller bindings](https://raw.github.com/thecodingmachine/integration.drupal.druplash/7.0/doc/images/controller_bindings.png)
 
 Step 4: clear Drupal's cache and test
 -------------------------------------
@@ -117,12 +116,12 @@ Finally, we can test. Go to <code>http://[server]/[drupal_directory]/helloworld?
 Step 5: Setting the page title
 ------------------------------
 
-In order to set the page title, you have 2 possible methods: using the getTitle method or using the @Title annotation.
+In order to set the page title, you have 2 possible methods: using the setTitle method on the template, or using the @Title annotation in the controller.
 
 Here is an example using the @Title annotation:
 
-<pre class="brush: php">
-class HomeController extends DrupalController {
+```php
+class HomeController extends Controller {
 	...
 
 	/**
@@ -135,13 +134,19 @@ class HomeController extends DrupalController {
 		// Here is my page.
 	}
 }
-</pre>
+```
 
 And here is an example using the setTitle method:
 
-<pre class="brush: php">
+```php
 class HomeController extends DrupalController {
 	...
+
+	/**
+	 * 
+	 * @var TemplateInterface
+	 */
+	public $template;
 
 	/**
 	 * A sample page.
@@ -149,21 +154,23 @@ class HomeController extends DrupalController {
 	 * @URL detailpage
 	 */
 	public function details($id) {
-		$this->setTitle("My Title");
+		$this->template->setTitle("My Title");
 		// Here is my page.
 	}
 }
-</pre>
+```
 
 If you can choose between setTitle and @Title, please choose the annotation.
 Indeed, some blocks relying an the page title might be displayed before you enter in the controller's method.
 For instance, if you have a bread-crumb relying on the page's title, the @Title might be your only option,
 since the breadcrumb might be called before the setTitle function.
 
-<h3>Step 6: overrding the Drupal Menu settings</h3>
-Sometimes, you may want to set additional settings into drupal's menu settings.
+Step 6: overriding the Drupal Menu settings
+-------------------------------------------
+
+Sometimes, you may want to set additional settings into Drupal's menu settings.
 To do so, there is a @DrupalMenuSettings annotation defined by a JSON object in value. The structure of the object will map the menu item structure :
-<pre class="brush: php">
+```php
 	
 	/**
 	 * @URL my/url
@@ -172,7 +179,13 @@ To do so, there is a @DrupalMenuSettings annotation defined by a JSON object in 
 	 */
 	public function myAction($jour = null, $typeCollect = null, $fonction = null) {
 		...
-	}
-	
-</pre>
-<b>Example</b>, you may want your Action to be represented as a drupal Tab. By default, the menu type is MENU_VISIBLE_IN_BREADCRUMB, that correponds to a simple URL. In order to get a Drupal tab for this actions, you should use a menu type MENU_LOCAL_TASK or MENU_DEFAULT_LOCAL_TASK. 
+	}	
+```
+*Example*, you may want your Action to be represented as a drupal Tab.
+By default, the menu type is MENU_VISIBLE_IN_BREADCRUMB, that correponds to a simple URL. In order to 
+get a Drupal tab for this actions, you should use a menu type MENU_LOCAL_TASK or MENU_DEFAULT_LOCAL_TASK.
+
+In the next tutorial
+--------------------
+
+Le's move on to the next chapter, where we will [learn how to write into Drupal blocks](https://github.com/thecodingmachine/integration.drupal.druplash/blob/7.0/doc/blocks.md).
