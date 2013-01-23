@@ -178,7 +178,9 @@ class Druplash {
 					$element->toHtml();
 				}*/
 				$drupalTemplate = Mouf::getDrupalTemplate();
-				$drupalTemplate->getContentBlock()->toHtml();
+				if ($drupalTemplate->isDisplayTriggered()) {
+					$drupalTemplate->getContentBlock()->toHtml();
+				}
 				$result = ob_get_clean();
 				
 				
