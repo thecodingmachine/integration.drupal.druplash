@@ -54,4 +54,7 @@ Step 4: enable Druplash package in Drupal
 Composer installed the druplash module in sites/all/modules. Now, we must enable this module.
 Log-in as administrator in Drupal, go to the *module administration page* and enable Druplash.
 
-Done? You are ready to go! You can now start the tutorial.
+Next step: follow the tutorial
+------------------------------
+
+Done? You are ready to go! You can now [start the tutorial](https://github.com/thecodingmachine/integration.drupal.druplash/blob/7.0/doc/tutorial.md).
