@@ -100,7 +100,7 @@ class Druplash {
 					    'page callback' => 'druplash_execute_action',
 					    'access arguments' => $accessArguments,
 						'page arguments' => array(array($httpMethod => array("instance"=>$urlCallback->controllerInstanceName, "method"=>$urlCallback->methodName))),
-					    'type' => MENU_VISIBLE_IN_BREADCRUMB
+					    'type' => MENU_CALLBACK
 					);
 					
 					foreach ($settings as $key => $value){
@@ -348,9 +348,9 @@ class Druplash {
 			if (!$found) {
 				// There is no annotation for the parameter.
 				// Let's map it to the request.
-				$paramValue = get($parameter->getName());
+				$paramValue = isset($_REQUEST[$parameter->getName()])?$_REQUEST[$parameter->getName()]:null;
 	
-				if ($paramValue !== false) {
+				if ($paramValue !== null) {
 					$values[] = $paramValue;
 				} else {
 					if ($parameter->isDefaultValueAvailable()) {
