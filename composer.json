@@ -46,10 +46,6 @@
 	    			"url": "doc/tutorial.md"
 	    		},
 	    		{
-	    			"title": "Ajax support",
-	    			"url": "doc/ajax.md"
-	    		},
-	    		{
 	    			"title": "Dynamic blocks",
 	    			"url": "doc/blocks.md"
 	    		}
