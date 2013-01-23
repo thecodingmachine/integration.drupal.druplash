@@ -98,21 +98,24 @@ So far, we have referenced the class in Mouf, but a class is useless if we do no
 Step 3: bind the instances
 --------------------------
 
+Now, we must fill the *template* and the *content* properties with instances.
 
-So far, we have referenced the class in Mouf, but a class is useless if we do not create an instance of it.
-
-- In the Mouf interface, click the "Instances / Create a new instance" menu
-- Choose a name for your instance. For instance: "myController".
-- Select your class in the drop-down (MyController)
-- Click the "Create" button
+ - The *template* property should always be bound to the "drupalTemplate" instance. This instance represents the Drupal theme, and calling the *toHtml()* method of the "drupalTemplate" triggers the rendering of the Drupal theme.
+ - The *content* property should always be bound to the "block.content" instance. This instance represents the central part of your theme (where Drupal nodes are displayed).
+ 
+After configuration, you should see something similar to this:
 
 
-<h3>Step 4: clear Drupal's cache and test</h3>
+TODO
+
+Step 4: clear Drupal's cache and test
+-------------------------------------
 
 Now, our instance is created. All that remains to do is to clear the Drupal cache (in the "Performance" section of Drupal admin).
-Finally, we can test. Go to <code>http://[server]/[drupal_directory]/mypage</code>. You should see a page with "Hello!" displayed.
+Finally, we can test. Go to <code>http://[server]/[drupal_directory]/helloworld?echo=42</code>. You should see a page with "Hello world!" displayed.
 
-<h3>Step 5: Setting the page title</h3>
+Step 5: Setting the page title
+------------------------------
 
 In order to set the page title, you have 2 possible methods: using the getTitle method or using the @Title annotation.
 
