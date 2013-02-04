@@ -45,6 +45,32 @@ class Druplash {
 				$title = $urlCallback->title ;
 			}
 			
+			
+			//////////////// Let's analyze the URL for parameter ////////////////////
+			$trimmedUrl = trim($url, '/');
+			$urlParts = explode("/", $trimmedUrl);
+			$urlPartsNew = array();
+			$parametersList = array();
+			
+			for ($i=0; $i<count($urlParts); $i++) {
+				$urlPart = $urlParts[$i];
+				if (strpos($urlPart, "{") === 0 && strpos($urlPart, "}") === strlen($urlPart)-1) {
+					// Parameterized URL element
+					$varName = substr($urlPart, 1, strlen($urlPart)-2);
+			
+					$parametersList[$varName] = $i;
+					$urlPartsNew[] = '%';
+				} else {
+					$urlPartsNew[] = $urlPart;
+				}
+			}
+			
+			// Let's rewrite the URL, but replacing the {var} parameters with a Drupal % wildcard
+			$url = implode('/', $urlPartsNew);
+			///////////////// End URL analysis ////////////////////
+			
+			
+			
 			//getItemMenuSettings from annotation
 			$annotations = MoufManager::getMoufManager()->getInstanceDescriptor($urlCallback->controllerInstanceName)->getClassDescriptor()->getMethod($urlCallback->methodName)->getAnnotations("DrupalMenuSettings");
 			$settings = array();
@@ -79,6 +105,7 @@ class Druplash {
 			
 				if (isset($items[$url])) {
 					// FIXME: support different 'access arguments' for different HTTP methods!
+					// TODO: support for {params} in @URL
 					
 					// Check that the URL has not been already declared.
 					if (isset($items[$url]['page arguments'][0][$httpMethod])) {
@@ -93,13 +120,13 @@ class Druplash {
 						drupal_set_message($msg, "error");
 					}
 					
-					$items[$url]['page arguments'][0][$httpMethod] = array("instance"=>$urlCallback->controllerInstanceName, "method"=>$urlCallback->methodName);
+					$items[$url]['page arguments'][0][$httpMethod] = array("instance"=>$urlCallback->controllerInstanceName, "method"=>$urlCallback->methodName, "urlParameters"=>$parametersList);
 				} else {
 					$items[$url] = array(
 					    'title' => $title,
 					    'page callback' => 'druplash_execute_action',
 					    'access arguments' => $accessArguments,
-						'page arguments' => array(array($httpMethod => array("instance"=>$urlCallback->controllerInstanceName, "method"=>$urlCallback->methodName))),
+						'page arguments' => array(array($httpMethod => array("instance"=>$urlCallback->controllerInstanceName, "method"=>$urlCallback->methodName, "urlParameters"=>$parametersList))),
 					    'type' => MENU_CALLBACK
 					);
 					
@@ -133,12 +160,12 @@ class Druplash {
 		} else {
 			drupal_not_found();
 		}
-		
+
 		$controller = MoufManager::getMoufManager()->getInstance($action['instance']);
-		return self::callAction($controller, $action['method']);
+		return self::callAction($controller, $action['method'], $action['urlParameters']);
 	}
 	
-	protected static function callAction($controller, $method) {
+	protected static function callAction($controller, $method, $urlParameters) {
 		// Default action is "defaultAction" or "index"
 		
 		if (empty($method)) {
@@ -165,7 +192,7 @@ class Druplash {
 				}
 		
 				// Ok, now, let's analyse the parameters.
-				$argsArray = self::mapParameters($refMethod);
+				$argsArray = self::mapParameters($refMethod, $urlParameters);
 				
 				ob_start();
 				try {
@@ -309,8 +336,13 @@ class Druplash {
 	/**
 	 * Analyses the method, the annotation parameters, and returns an array to be passed to the method.
 	 * TODO: optimize, remove mapParameters and use preprocessed values
+	 * 
+	 * @param MoufReflectionMethod $refMethod
+	 * @param array<string, int> $urlParameters An array mapping the parameter name to its position in the URL (0 being the left-most position)
+	 * @throws \Mouf\Integration\Drupal\Druplash\ApplicationException
+	 * @return array
 	 */
-	private static function mapParameters(MoufReflectionMethod $refMethod) {
+	private static function mapParameters(MoufReflectionMethod $refMethod, array $urlParameters) {
 		$parameters = $refMethod->getParameters();
 	
 		// Let's analyze the @param annotations.
@@ -318,7 +350,14 @@ class Druplash {
 	
 		$values = array();
 		foreach ($parameters as $parameter) {
-			// First step: let's see if there is an @param annotation for that parameter.
+			// First, is this a parameter from the path of the URL?
+			if (isset($urlParameters[$parameter->getName()])) {
+				$pos = $urlParameters[$parameter->getName()];
+				$values[] = arg($pos);
+				continue;
+			}
+			
+			// Second step: let's see if there is an @param annotation for that parameter.
 			$found = false;
 			if ($paramAnnotations != null) {
 				foreach ($paramAnnotations as $annotation) {
@@ -373,6 +412,8 @@ class Druplash {
 	
 		return $values;
 	}
+	
+
 }
 
 ?>
