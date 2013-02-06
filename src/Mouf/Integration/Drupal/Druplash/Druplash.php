@@ -183,7 +183,7 @@ class Druplash {
 			// FIXME: the analysis should be performed during getDrupalMenus for performance.
 			$refMethod = $refClass->getMethod($method);    // $refMethod is an instance of MoufReflectionMethod
 		
-			try {
+			//try {
 				$filters = FilterUtils::getFilters($refMethod, $controller);
 		
 				// Apply filters
@@ -224,19 +224,13 @@ class Druplash {
 					echo $result;
 				}
 		
-			}
+			/*}
 			catch (Exception $e) {
 				// FIXME
 				return $this->handleException($e);
-			}
+			}*/
 		} else {
-			// "Method Not Found";
-			//$debug = MoufManager::getMoufManager()->getInstance("splash")->debugMode;
-			// FIXME: $debug non disponible car "splash" instance n'exite pas dans Drupal
-			//self::FourOFour("404.wrong.method", $debug);
-			
-			// FIXME
-			self::FourOFour("404.wrong.method", true);
+			drupal_not_found();
 			exit;
 		}
 	}
