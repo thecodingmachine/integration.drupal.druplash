@@ -1,6 +1,8 @@
 <?php
 namespace Mouf\Integration\Drupal\Druplash;
 
+use Mouf\Mvc\Splash\Utils\ApplicationException;
+
 use Mouf\Reflection\MoufReflectionMethod;
 
 use Mouf\Mvc\Splash\Services\FilterUtils;
