@@ -1,6 +1,8 @@
 <?php
 namespace Mouf\Integration\Drupal\Druplash;
 
+use Mouf\Mvc\Splash\Utils\ApplicationException;
+
 use Mouf\Reflection\MoufReflectionMethod;
 
 use Mouf\Mvc\Splash\Services\FilterUtils;
@@ -199,7 +201,8 @@ class Druplash {
 					echo call_user_func_array(array($controller,$method), $argsArray);
 				} catch (Exception $e) {
 					ob_end_clean();
-					throw $e;
+					// Rethrow and keep stack trace.
+					throw new Exception($e->getMessage, 0, $e);
 				}
 				/*foreach ($this->content as $element) {
 					$element->toHtml();
