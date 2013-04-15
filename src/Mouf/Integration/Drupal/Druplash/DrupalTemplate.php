@@ -96,6 +96,7 @@ class DrupalTemplate implements TemplateInterface {
 	 *
 	 */
 	public function toHtml() {
+		drupal_set_title($this->title);
 		$this->displayTriggered = true;
 	}
 	
