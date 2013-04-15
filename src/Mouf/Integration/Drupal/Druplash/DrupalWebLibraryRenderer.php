@@ -41,9 +41,9 @@ class DrupalWebLibraryRenderer implements WebLibraryRendererInterface {
 		if ($files) {
 			foreach ($files as $file) {
 				if(strpos($file, 'http://') === false && strpos($file, 'https://') === false && strpos($file, '/') !== 0) { 
-					drupal_add_js($file, 'file');
+					drupal_add_js($file);
 				} else {
-					drupal_add_js($file, 'external');
+					drupal_add_js($file, 'inline');
 				}
 			}
 		}

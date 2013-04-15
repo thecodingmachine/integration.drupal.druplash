@@ -209,6 +209,7 @@ class Druplash {
 				}*/
 				$drupalTemplate = Mouf::getDrupalTemplate();
 				if ($drupalTemplate->isDisplayTriggered()) {
+					$drupalTemplate->getWebLibraryManager()->toHtml();
 					$drupalTemplate->getContentBlock()->toHtml();
 				}
 				$result = ob_get_clean();
