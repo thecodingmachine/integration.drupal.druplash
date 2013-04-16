@@ -161,6 +161,7 @@ class Druplash {
 			$action = $actions["default"];
 		} else {
 			drupal_not_found();
+			return;
 		}
 
 		$controller = MoufManager::getMoufManager()->getInstance($action['instance']);
