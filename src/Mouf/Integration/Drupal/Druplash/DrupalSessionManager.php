@@ -35,10 +35,10 @@ class DrupalSessionManager implements SessionManagerInterface {
 		$_SERVER['SCRIPT_NAME'] = ROOT_URL.'/index.php';
 		
 		$olddir = getcwd();
-		chdir(dirname(__FILE__)."/../../../../../");
+		chdir(dirname(__FILE__)."/../../../../../../../../");
 		
 		define('DRUPAL_ROOT', getcwd());
-		require_once dirname(__FILE__)."/../../../../../includes/bootstrap.inc";
+		require_once dirname(__FILE__)."/../../../../../../../../includes/bootstrap.inc";
 		drupal_bootstrap($this->bootstrapFull ? DRUPAL_BOOTSTRAP_FULL : DRUPAL_BOOTSTRAP_SESSION);
 		
 		chdir($olddir);
