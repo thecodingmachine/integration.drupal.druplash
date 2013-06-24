@@ -206,7 +206,7 @@ class Druplash {
 			$refMethod = $refClass->getMethod($method);    // $refMethod is an instance of MoufReflectionMethod
 		
 			$context = new SplashRequestContext();
-			$context->setUrlParameters($splashRoute->filledParameters);
+			$context->setUrlParameters(array_map(function($itemPos) { return arg($itemPos); }, $urlParameters));
 			
 			/****/
 			$args = array();
