@@ -1,6 +1,12 @@
 <?php
 namespace Mouf\Integration\Drupal\Druplash;
 
+use Mouf\Mvc\Splash\Services\SplashRequestContext;
+
+use Mouf\Mvc\Splash\Services\SplashRoute;
+
+use Mouf\Mvc\Splash\Controllers\Controller;
+
 use Mouf\Mvc\Splash\Utils\ApplicationException;
 
 use Mouf\Reflection\MoufReflectionMethod;
@@ -31,12 +37,24 @@ class Druplash {
 	 */
 	public static function getDrupalMenus() {
 		$allConstants = get_defined_constants();
-		$urlsList = SplashUtils::getSplashUrlManager()->getUrlsList(false);
+// 		$urlsList = SplashUtils::getSplashUrlManager()->getUrlsList(false);
+		
+		$moufManager = MoufManager::getMoufManager();
+		$instanceNames = $moufManager->findInstances("Mouf\\Mvc\\Splash\\Services\\UrlProviderInterface");
+		
+		$urlsList = array();
+		
+		foreach ($instanceNames as $instanceName) {
+			$urlProvider = $moufManager->getInstance($instanceName);
+			/* @var $urlProvider UrlProviderInterface */
+			$tmpUrlList = $urlProvider->getUrlsList();
+			$urlsList = array_merge($urlsList, $tmpUrlList);
+		}
 		
 		$items = array();
 		
 		foreach ($urlsList as $urlCallback) {
-			/* @var $urlCallback SplashCallback */
+			/* @var $urlCallback SplashRoute */
 			
 			$url = $urlCallback->url;
 			// remove trailing slash
@@ -122,13 +140,13 @@ class Druplash {
 						drupal_set_message($msg, "error");
 					}
 					
-					$items[$url]['page arguments'][0][$httpMethod] = array("instance"=>$urlCallback->controllerInstanceName, "method"=>$urlCallback->methodName, "urlParameters"=>$parametersList);
+					$items[$url]['page arguments'][0][$httpMethod] = array("instance"=>$urlCallback->controllerInstanceName, "method"=>$urlCallback->methodName, "urlParameters"=>$parametersList, "splashRoute" => $urlCallback);
 				} else {
 					$items[$url] = array(
 					    'title' => $title,
 					    'page callback' => 'druplash_execute_action',
 					    'access arguments' => $accessArguments,
-						'page arguments' => array(array($httpMethod => array("instance"=>$urlCallback->controllerInstanceName, "method"=>$urlCallback->methodName, "urlParameters"=>$parametersList))),
+						'page arguments' => array(array($httpMethod => array("instance"=>$urlCallback->controllerInstanceName, "method"=>$urlCallback->methodName, "urlParameters"=>$parametersList, "splashRoute" => $urlCallback))),
 					    'type' => MENU_VISIBLE_IN_BREADCRUMB
 					);
 					
@@ -165,10 +183,10 @@ class Druplash {
 		}
 
 		$controller = MoufManager::getMoufManager()->getInstance($action['instance']);
-		return self::callAction($controller, $action['method'], $action['urlParameters']);
+		return self::callAction($controller, $action['method'], $action['urlParameters'], $action['splashRoute']);
 	}
 	
-	protected static function callAction($controller, $method, $urlParameters) {
+	protected static function callAction($controller, $method, $urlParameters, SplashRoute $splashRoute) {
 		// Default action is "defaultAction" or "index"
 		
 		if (empty($method)) {
@@ -180,60 +198,75 @@ class Druplash {
 			}
 		}
 		
+		
 		if (method_exists($controller,$method)) {
 			// Ok, is this method an action?
 			$refClass = new MoufReflectionClass(get_class($controller));
 			// FIXME: the analysis should be performed during getDrupalMenus for performance.
 			$refMethod = $refClass->getMethod($method);    // $refMethod is an instance of MoufReflectionMethod
 		
-			//try {
-				$filters = FilterUtils::getFilters($refMethod, $controller);
-		
-				// Apply filters
-				for ($i=count($filters)-1; $i>=0; $i--) {
-					$filters[$i]->beforeAction();
-				}
-		
-				// Ok, now, let's analyse the parameters.
-				$argsArray = self::mapParameters($refMethod, $urlParameters);
-				
-				ob_start();
+			$context = new SplashRequestContext();
+			$context->setUrlParameters($splashRoute->filledParameters);
+			
+			/****/
+			$args = array();
+			foreach ($splashRoute->parameters as $paramFetcher) {
+				/* @var $param SplashParameterFetcherInterface */
 				try {
-					echo call_user_func_array(array($controller,$method), $argsArray);
-				} catch (Exception $e) {
-					ob_end_clean();
-					// Rethrow and keep stack trace.
-					throw new Exception($e->getMessage(), 0, $e);
-				}	
-				/*foreach ($this->content as $element) {
-					$element->toHtml();
-				}*/
-				$drupalTemplate = Mouf::getDrupalTemplate();
-				if ($drupalTemplate->isDisplayTriggered()) {
-					$drupalTemplate->getWebLibraryManager()->toHtml();
-					$drupalTemplate->getContentBlock()->toHtml();
+					$args[] = $paramFetcher->fetchValue($context);
+				} catch (SplashValidationException $e) {
+			
+					$e->setPrependedMessage(SplashUtils::translate("validate.error.while.validating.parameter", $paramFetcher->getName()));
+					throw $e;
 				}
-				$result = ob_get_clean();
+			}
+			
+			// Handle action__GET or action__POST method (for legacy code).
+			if(method_exists($controller, $method.'__'.$_SERVER['REQUEST_METHOD'])) {
+				$method = $method.'__'.$_SERVER['REQUEST_METHOD'];
+			}
+			
+			$filters = $splashRoute->filters;
+			
+			// Apply filters
+			for ($i=count($filters)-1; $i>=0; $i--) {
+				$filters[$i]->beforeAction();
+			}
 				
-				
-				// Apply filters
-				for ($i=count($filters)-1; $i>=0; $i--) {
-					$filters[$i]->afterAction();
-				}
-		
-				// Now, let's see if we must output everything in the template or out the template.
-				
-				if ($drupalTemplate->isDisplayTriggered()) {
-					return $result;
-				} else {
-					echo $result;
-				}
-		
-			/*}
-			catch (Exception $e) {
-				// FIXME
-				return $this->handleException($e);
+			// Ok, now, let's store the parameters.
+			//call_user_func_array(array($this,$method), AdminBag::getInstance()->argsArray);
+			//$result = call_user_func_array(array($this,$method), $argsArray);
+			
+			ob_start();
+			try {
+				echo call_user_func_array(array($controller,$method), $args);
+			} catch (Exception $e) {
+				ob_end_clean();
+				// Rethrow and keep stack trace.
+				throw new Exception($e->getMessage(), 0, $e);
+			}
+			/*foreach ($this->content as $element) {
+			 $element->toHtml();
 			}*/
+			$drupalTemplate = Mouf::getDrupalTemplate();
+			if ($drupalTemplate->isDisplayTriggered()) {
+				$drupalTemplate->getWebLibraryManager()->toHtml();
+				$drupalTemplate->getContentBlock()->toHtml();
+			}
+			$result = ob_get_clean();
+			
+			foreach ($filters as $filter) {
+				$filter->afterAction();
+			}
+		
+			// Now, let's see if we must output everything in the template or out the template.
+			
+			if ($drupalTemplate->isDisplayTriggered()) {
+				return $result;
+			} else {
+				echo $result;
+			}
+		
 		} else {
 			drupal_not_found();
 			exit;
