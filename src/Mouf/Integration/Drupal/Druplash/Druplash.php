@@ -51,7 +51,7 @@ class Druplash {
 			$urlsList = array_merge($urlsList, $tmpUrlList);
 		}
 		
-		$items = array();
+		$items = array(); 
 		
 		foreach ($urlsList as $urlCallback) {
 			/* @var $urlCallback SplashRoute */
