@@ -90,14 +90,6 @@ class DrupalDynamicBlock extends HtmlBlock implements DrupalDynamicBlockInterfac
 	public $subject;
 	
 	/**
-	 * The body of the block.
-	 * 
-	 * @Property
-	 * @var array<HtmlElementInterface>
-	 */
-	public $content;
-	
-	/**
 	 * Returns the block name, as displayed in Drupal's interface.
 	 * 
 	 * @return string
