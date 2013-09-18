@@ -1,4 +1,6 @@
 <?php
+namespace Mouf\Integration\Drupal\Druplash;
+
 /**
  * 
  * Druplash permission descriptor: Schema of the permission given to the Drupal hook_permission.
@@ -11,8 +13,6 @@ class DruplashPermissionDescriptor {
 	/**
 	 * The name of the Drupal permission.
 	 * 
-	 * @Property
-	 * @Compulsory
 	 * @var string
 	 */
 	public $name;
@@ -20,8 +20,6 @@ class DruplashPermissionDescriptor {
 	/**
 	 * Title: The human-readable name of the permission, to be shown on the permission administration page.
 	 * 
-	 * @Property
-	 * @Compulsory
 	 * @var string
 	 */
 	public $title;
@@ -29,7 +27,6 @@ class DruplashPermissionDescriptor {
 	/**
 	 * Description: (optional) A description of what the permission does.
 	 * 
-	 * @Property
 	 * @var string
 	 */
 	public $description;
@@ -43,7 +40,6 @@ class DruplashPermissionDescriptor {
 	 * will be associated with the permission and displayed with it on the permission administration page. 
 	 * Defaults to FALSE. 
 	 * 
-	 * @Property
 	 * @var bool
 	 */
 	public $restrictAccess = false;

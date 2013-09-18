@@ -1,55 +1,59 @@
 {
-    "name": "mouf/integration.drupal.druplash",
-    "description": "This module provides a MVC framework, right into Drupal, based on the Splash MVC framework (designed for Mouf-PHP).",
-    "keywords": ["drupal", "mvc", "splash", "mouf"],
-    "homepage": "https://github.com/thecodingmachine/integration.drupal.druplash",
-    "type": "mouf-library",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "David Négrier",
-            "email": "d.negrier@thecodingmachine.com",
-            "homepage": "http://mouf-php.com"
-        }
-    ],
-    "require": {
-    	"php": ">=5.3.0",
-        "composer/installers": "*",
-        "mouf/integration.drupal.druplash-drupalmodule": "7.0.*",
-        "mouf/html.template.templateinterface": "~2.0",
-        "mouf/mvc.splash-common": "~4.0",
-        "mouf/utils.session.session-manager": "~2.0"
-    },
-    "autoload": {
-        "psr-0": {
-            "Mouf": "src/"
-        }
-    },
-    "extra": {
-        "installer-paths": {
-            "sites/all/modules/druplash/": "mouf/integration.drupal.druplash-drupalmodule"
-        },
-        "mouf": {
-	     	"install": [
-				{
-					"type": "file",
-		    		"file": "src/install.php"
+	"name" : "mouf/integration.drupal.druplash",
+	"description" : "This module provides a MVC framework, right into Drupal, based on the Splash MVC framework (designed for Mouf-PHP).",
+	"type" : "mouf-library",
+	"authors" : [{
+			"name" : "David Négrier",
+			"email" : "d.negrier@thecodingmachine.com",
+			"homepage" : "http://mouf-php.com"
+		}
+	],
+	"keywords" : [
+		"drupal",
+		"mvc",
+		"splash",
+		"mouf"
+	],
+	"homepage" : "https://github.com/thecodingmachine/integration.drupal.druplash",
+	"license" : [
+		"MIT"
+	],
+	"require" : {
+		"composer/installers" : "*",
+		"mouf/security.rightsservice-splash" : "~4.0",
+		"mouf/security.rightsservice" : "~2.0",
+		"mouf/utils.session.session-manager" : "~2.0",
+		"php" : ">=5.3.0",
+		"mouf/integration.drupal.druplash-drupalmodule" : "7.0.*",
+		"mouf/html.template.templateinterface" : "~2.0",
+		"mouf/mvc.splash-common" : "~4.0"
+	},
+	"autoload" : {
+		"psr-0" : {
+			"Mouf" : "src/"
+		}
+	},
+	"extra" : {
+		"installer-paths" : {
+			"sites/all/modules/druplash/" : "mouf/integration.drupal.druplash-drupalmodule"
+		},
+		"mouf" : {
+			"install" : [{
+					"file" : "src/install.php",
+					"type" : "file"
 				}
 			],
-			"doc": [
-	    		{
-	    			"title": "Installing Druplash",
-	    			"url": "doc/install.md"
-	    		},
-	    		{
-	    			"title": "Druplash tutorial",
-	    			"url": "doc/tutorial.md"
-	    		},
-	    		{
-	    			"title": "Dynamic blocks",
-	    			"url": "doc/blocks.md"
-	    		}
-	    	]
+			"doc" : [{
+					"title" : "Installing Druplash",
+					"url" : "doc/install.md"
+				}, {
+					"title" : "Druplash tutorial",
+					"url" : "doc/tutorial.md"
+				}, {
+					"title" : "Dynamic blocks",
+					"url" : "doc/blocks.md"
+				}
+			]
 		}
-    }
+	}
 }

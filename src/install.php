@@ -38,6 +38,26 @@ if ($webLibraryManager && $drupalTemplateDescriptor->getProperty('webLibraryMana
 	$drupalTemplateDescriptor->getProperty('webLibraryManager')->setValue($webLibraryManager);
 }
 
+// Let's delete and recreate the DrupalRightService.
+if ($moufManager->instanceExists("rightsService")) {
+	$moufManager->removeComponent("rightsService");
+}
+
+$rightsService = $moufManager->createInstance("Mouf\\Integration\\Drupal\\Druplash\\DruplashRightService");
+$rightsService->setName("rightsService");
+if ($moufManager->instanceExists("errorLogLogger")) {
+	$rightsService->getProperty("log")->setValue($moufManager->getInstanceDescriptor("errorLogLogger"));
+}
+
+if ($moufManager->instanceExists("userService")) {
+	$userService = $moufManager->getInstanceDescriptor("userService");
+	$rightsService->getProperty("userService")->setValue($userService);
+
+	$prevValues = $userService->getProperty('authenticationListeners')->getValue();
+	$prevValues[] = $rightsService;
+	$userService->getProperty('authenticationListeners')->setValue($prevValues);
+}
+
 // Let's rewrite the MoufComponents.php file to save the component
 $moufManager->rewriteMouf();
 

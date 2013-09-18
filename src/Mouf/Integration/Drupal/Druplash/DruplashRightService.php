@@ -1,10 +1,13 @@
 <?php
+namespace Mouf\Integration\Drupal\Druplash;
+
+use Mouf\Security\RightsService\MoufRightService;
+use Mouf\MoufException;
+
 /**
  * 
  * Class to recover all Drupal application permissions.
  * @author Nicolas
- *
- * @Component
  */
 class DruplashRightService extends MoufRightService {
 	
