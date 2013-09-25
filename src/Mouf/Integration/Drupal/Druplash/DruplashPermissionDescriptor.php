@@ -13,6 +13,7 @@ class DruplashPermissionDescriptor {
 	/**
 	 * The name of the Drupal permission.
 	 * 
+	 * @Important
 	 * @var string
 	 */
 	public $name;
@@ -20,6 +21,7 @@ class DruplashPermissionDescriptor {
 	/**
 	 * Title: The human-readable name of the permission, to be shown on the permission administration page.
 	 * 
+	 * @Important
 	 * @var string
 	 */
 	public $title;
