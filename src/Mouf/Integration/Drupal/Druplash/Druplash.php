@@ -25,6 +25,7 @@ use Mouf\Mvc\Splash\Services\SplashUtils;
 use Mouf\MoufManager;
 use Mouf;
 use Exception;
+use Mouf\MoufException;
 
 /**
  * Main class in charge of routing
@@ -140,13 +141,13 @@ class Druplash {
 						drupal_set_message($msg, "error");
 					}
 					
-					$items[$url]['page arguments'][0][$httpMethod] = array("instance"=>$urlCallback->controllerInstanceName, "method"=>$urlCallback->methodName, "urlParameters"=>$parametersList, "splashRoute" => $urlCallback);
+					$items[$url]['page arguments'][0][$httpMethod] = array("instance"=>$urlCallback->controllerInstanceName, "method"=>$urlCallback->methodName, "urlParameters"=>$parametersList, "parameters" => $urlCallback->parameters, "filters" => $urlCallback->filters);
 				} else {
 					$items[$url] = array(
 					    'title' => $title,
 					    'page callback' => 'druplash_execute_action',
 					    'access arguments' => $accessArguments,
-						'page arguments' => array(array($httpMethod => array("instance"=>$urlCallback->controllerInstanceName, "method"=>$urlCallback->methodName, "urlParameters"=>$parametersList, "splashRoute" => $urlCallback))),
+						'page arguments' => array(array($httpMethod => array("instance"=>$urlCallback->controllerInstanceName, "method"=>$urlCallback->methodName, "urlParameters"=>$parametersList, "parameters" => $urlCallback->parameters, "filters" => $urlCallback->filters))),
 					    'type' => MENU_VISIBLE_IN_BREADCRUMB
 					);
 					
@@ -159,6 +160,13 @@ class Druplash {
 				}
 			}
 			
+		}
+		
+		// Security check: the serialized version of 'page arguments' must not be bigger than 65536 to fit in the Drupal table hosting it.
+		foreach ($items as $url=>$item) {
+			if (strlen(serialize($item['page arguments'])) > 65535) {
+				throw new MoufException("Sorry! For URL '".$url."', the generated hook_menu has a 'page arguments' too big to store in Drupal menu_router table (serialized version of 'page arguments' is > 65536)");
+			}
 		}
 		
 		return $items;
@@ -183,10 +191,10 @@ class Druplash {
 		}
 
 		$controller = MoufManager::getMoufManager()->getInstance($action['instance']);
-		return self::callAction($controller, $action['method'], $action['urlParameters'], $action['splashRoute']);
+		return self::callAction($controller, $action['method'], $action['urlParameters'], $action['parameters'], $action['filters']);
 	}
 	
-	protected static function callAction($controller, $method, $urlParameters, SplashRoute $splashRoute) {
+	protected static function callAction($controller, $method, $urlParameters, $parameters, $filters) {
 		// Default action is "defaultAction" or "index"
 		
 		if (empty($method)) {
@@ -210,7 +218,7 @@ class Druplash {
 			
 			/****/
 			$args = array();
-			foreach ($splashRoute->parameters as $paramFetcher) {
+			foreach ($parameters as $paramFetcher) {
 				/* @var $param SplashParameterFetcherInterface */
 				try {
 					$args[] = $paramFetcher->fetchValue($context);
@@ -226,7 +234,6 @@ class Druplash {
 				$method = $method.'__'.$_SERVER['REQUEST_METHOD'];
 			}
 			
-			$filters = $splashRoute->filters;
 			
 			// Apply filters
 			for ($i=count($filters)-1; $i>=0; $i--) {
