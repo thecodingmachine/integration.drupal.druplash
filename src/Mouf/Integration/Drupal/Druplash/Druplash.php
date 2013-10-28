@@ -398,10 +398,11 @@ class Druplash {
 					} else {
 						// No default value and no parameter... this is an error!
 						// TODO: we could provide a special annotation to redirect on another action on error.
-						$application_exception = new ApplicationException();
+                                                throw new \Exception("Awaiting parameter in request: '".$parameter->getName()."' in '".$refMethod->getDeclaringClass()->getName()."->".$refMethod->getName()."'");
+						/*$application_exception = new ApplicationException();
 						$application_exception->setTitle("controller.incorrect.parameter.title",$refMethod->getDeclaringClass()->getName(),$refMethod->getName(),$parameter->getName());
 						$application_exception->setMessage("controller.incorrect.parameter.text",$refMethod->getDeclaringClass()->getName(),$refMethod->getName(),$parameter->getName());
-						throw $application_exception;
+						throw $application_exception;*/
 					}
 				}
 			}
