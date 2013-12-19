@@ -250,7 +250,7 @@ class Druplash {
 			} catch (Exception $e) {
 				ob_end_clean();
 				// Rethrow and keep stack trace.
-				throw new Exception($e->getMessage(), 0, $e);
+				throw $e;
 			}
 			/*foreach ($this->content as $element) {
 			 $element->toHtml();
