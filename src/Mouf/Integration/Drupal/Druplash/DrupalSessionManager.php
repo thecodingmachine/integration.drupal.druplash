@@ -29,10 +29,10 @@ class DrupalSessionManager implements SessionManagerInterface {
 		if (isset($_SESSION)) {
 			return false;
 		}
-
+		
 		// Let's lie to Drupal and pretend it started the app
 		$oldScriptName = $_SERVER['SCRIPT_NAME'];
-		$_SERVER['SCRIPT_NAME'] = ROOT_URL.'/index.php';
+		$_SERVER['SCRIPT_NAME'] = $this->canonicalize(ROOT_URL.'/index.php');
 		
 		$olddir = getcwd();
 		chdir(dirname(__FILE__)."/../../../../../../../../");
@@ -62,5 +62,24 @@ class DrupalSessionManager implements SessionManagerInterface {
 	 */
 	public function destroy() {
 		throw new Exception("destroy is not implemented in DrupalSessionManager");
+	}
+	
+	/**
+	 * Render a canonical (../, /, ./ free) url
+	 * 
+	 * @param string $address
+	 */
+	private static function canonicalize($address){
+	    $address = explode('/', $address);
+	    $keys = array_keys($address, '..');
+	
+	    foreach($keys AS $keypos => $key){
+	        array_splice($address, $key - ($keypos * 2 + 1), 2);
+	    }
+	
+	    $address = implode('/', $address);
+	    $address = str_replace('./', '', $address);
+	    
+	    return $address;
 	}
 }
