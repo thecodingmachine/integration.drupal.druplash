@@ -15,9 +15,7 @@
 		"mouf"
 	],
 	"homepage" : "https://github.com/thecodingmachine/integration.drupal.druplash",
-	"license" : [
-		"MIT"
-	],
+	"license" : "MIT",
 	"require" : {
 		"composer/installers" : "*",
 		"mouf/security.rightsservice-splash" : "~4.0",
