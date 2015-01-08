@@ -28,6 +28,6 @@ Use this *composer.json* file to install an environement with Drupal and Druplas
 
 Note: if you want to install Druplash in an existing Drupal, remove the *thecodingmachine/drupal*.
 
-Your packages are downloaded? Have a quick look at the [installation guide](https://github.com/thecodingmachine/integration.drupal.druplash/blob/7.0/doc/install.md).
+Your packages are downloaded? Have a quick look at the [installation guide](doc/install.md).
 
-Then, check the tutorial and learn how to [create a controller](https://github.com/thecodingmachine/integration.drupal.druplash/blob/7.0/doc/tutorial.md), right inside your Drupal website!
+Then, check the tutorial and learn how to [create a controller](doc/tutorial.md), right inside your Drupal website!
