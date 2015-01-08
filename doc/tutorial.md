@@ -185,6 +185,93 @@ To do so, there is a @DrupalMenuSettings annotation defined by a JSON object in 
 By default, the menu type is MENU_VISIBLE_IN_BREADCRUMB, that correponds to a simple URL. In order to 
 get a Drupal tab for this actions, you should use a menu type MENU_LOCAL_TASK or MENU_DEFAULT_LOCAL_TASK.
 
+Symfony HttpFoundation support
+------------------------------
+
+Since Druplash 7.3, support for [Symfony HttpFoundation component](http://symfony.com/doc/current/components/http_foundation/index.html) has been added.
+
+This means that Druplash will automatically inject a `Request` object into your action if your action expects a `Request` object 
+(just like the way it works in Symfony 2):
+
+```php
+use Symfony\Component\HttpFoundation\Request;
+...
+
+/**
+ * My action with the request object filled
+ *
+ * @URL /test
+ * @param Request $request
+ */
+public function my_action(Request $request) {
+	$param = $request->get('param');
+	...
+} 
+```
+
+Note: you should use the `Request` object instead of accessing directly `$_FILES`, `$_SERVER`, `$_COOKIES`, or HTTP headers.
+
+You can also return a [Symfony 2 Response object](http://symfony.com/fr/doc/current/components/http_foundation/introduction.html#reponse)
+
+Therefore, you can write things like:
+
+```php
+<?php
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
+
+class MyController extends Controller {
+	
+	/**
+	 * Returning a Response object
+	 *
+	 * @URL /myurl1
+	 */
+	public function test1() {
+		 return new Response('Hello World', 200, array('content-type' => 'text/html'));
+	}
+	
+	/**
+	 * Returning a JSON response
+	 *
+	 * @URL /myjsonurl
+	 */
+	public function testJson() {
+		 return new JsonResponse({ "status" => "ok", "message" => "Hello world!" });
+	}
+}
+?>
+```
+
+Typically, in Druplash, you will want to output the Drupal template object. You can easily output templates (or any object
+implementing the [`HtmlElementInterface`](http://mouf-php.com/packages/mouf/html.htmlelement/README.md) using the `HtmlResponse` object:
+
+```php
+<?php
+use Mouf\Mvc\Splash\HtmlResponse;
+
+class MyController extends Controller {
+    /**
+     * @var DrupalTemplate
+     */
+    private $template;
+	
+	...
+	
+	/**
+	 * Returning a Response object
+	 *
+	 * @URL /test_template
+	 */
+	public function test1() {
+	    // do stuff
+		return new HtmlResponse($this->template);
+	}
+}
+?>
+```
+
+
 In the next tutorial
 --------------------
 
