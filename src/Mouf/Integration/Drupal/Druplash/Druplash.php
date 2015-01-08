@@ -248,6 +248,11 @@ class Druplash {
 			//call_user_func_array(array($this,$method), AdminBag::getInstance()->argsArray);
 			//$result = call_user_func_array(array($this,$method), $argsArray);
 			
+			header_remove('Expires');
+			header_remove('Last-Modified');
+			header_remove('Cache-Control');
+			header_remove('ETag');
+			
 			$response = SplashUtils::buildControllerResponse(
 					function() use ($controller, $method, $args){
 						return call_user_func_array(array($controller,$method), $args);
@@ -259,8 +264,11 @@ class Druplash {
 			if ($response instanceof HtmlResponse) {
 				$htmlElement = $response->getHtmlElement();
 				if ($htmlElement instanceof DrupalTemplate) {
+					ob_start();
+					$htmlElement->toHtml();
 					$htmlElement->getWebLibraryManager()->toHtml();
 					$htmlElement->getContentBlock()->toHtml();
+					$result = ob_get_clean();
 				} else {
 					$response->send();
 				}
@@ -271,7 +279,6 @@ class Druplash {
 				if ($drupalTemplate->isDisplayTriggered()) {
 					$drupalTemplate->getWebLibraryManager()->toHtml();
 					$drupalTemplate->getContentBlock()->toHtml();
-					
 				}
 				$result = ob_get_clean();
 			}
