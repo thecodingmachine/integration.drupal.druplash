@@ -96,6 +96,9 @@ class DrupalTemplate implements TemplateInterface {
 	 *
 	 */
 	public function toHtml() {
+		// Let's register the template renderer in the default renderer.
+		$this->getDefaultRenderer()->setTemplateRenderer($this->getTemplateRenderer());
+		
 		drupal_set_title($this->title);
 		$this->displayTriggered = true;
 	}

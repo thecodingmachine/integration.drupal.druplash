@@ -24,6 +24,7 @@
 		"php" : ">=5.3.0",
 		"mouf/integration.drupal.druplash-drupalmodule" : "7.0.*",
 		"mouf/html.template.templateinterface" : "~2.0",
+		"mouf/html.utils.weblibrarymanager": "~3.0",
 		"mouf/mvc.splash-common" : "~5.0"
 	},
 	"provide" : {
@@ -41,8 +42,9 @@
 		"mouf" : {
 			"logo" : "logo.png",
 			"install" : [{
-					"file" : "src/install.php",
-					"type" : "file"
+					"type" : "class",
+					"class" : "Mouf\\Integration\\Drupal\\Druplash\\DruplashInstaller",
+					"description" : "Installer for Druplash: will create required instances"
 				}
 			],
 			"doc" : [{

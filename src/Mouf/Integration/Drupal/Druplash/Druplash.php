@@ -26,6 +26,7 @@ use Mouf\MoufManager;
 use Mouf;
 use Exception;
 use Mouf\MoufException;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Main class in charge of routing
@@ -195,8 +196,9 @@ class Druplash {
 	}
 	
 	protected static function callAction($controller, $method, $urlParameters, $parameters, $filters) {
-		// Default action is "defaultAction" or "index"
+		$request = Request::createFromGlobals();
 		
+		// Default action is "defaultAction" or "index"
 		if (empty($method)) {
 			// Support for both defaultAction, and if not found "index" method.
 			if (method_exists($this,"defaultAction")) {
@@ -213,7 +215,7 @@ class Druplash {
 			// FIXME: the analysis should be performed during getDrupalMenus for performance.
 			$refMethod = $refClass->getMethod($method);    // $refMethod is an instance of MoufReflectionMethod
 		
-			$context = new SplashRequestContext();
+			$context = new SplashRequestContext($request);
 			$context->setUrlParameters(array_map(function($itemPos) { return arg($itemPos); }, $urlParameters));
 			
 			/****/

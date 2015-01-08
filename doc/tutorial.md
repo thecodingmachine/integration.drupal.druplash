@@ -188,4 +188,4 @@ get a Drupal tab for this actions, you should use a menu type MENU_LOCAL_TASK or
 In the next tutorial
 --------------------
 
-Le's move on to the next chapter, where we will [learn how to write into Drupal blocks](https://github.com/thecodingmachine/integration.drupal.druplash/blob/7.0/doc/blocks.md).
+Le's move on to the next chapter, where we will [learn how to write into Drupal blocks](blocks.md).
