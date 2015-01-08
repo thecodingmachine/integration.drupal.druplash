@@ -27,6 +27,8 @@ use Mouf;
 use Exception;
 use Mouf\MoufException;
 use Symfony\Component\HttpFoundation\Request;
+use Mouf\Mvc\Splash\HtmlResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Main class in charge of routing
@@ -246,23 +248,33 @@ class Druplash {
 			//call_user_func_array(array($this,$method), AdminBag::getInstance()->argsArray);
 			//$result = call_user_func_array(array($this,$method), $argsArray);
 			
-			ob_start();
-			try {
-				echo call_user_func_array(array($controller,$method), $args);
-			} catch (Exception $e) {
-				ob_end_clean();
-				// Rethrow and keep stack trace.
-				throw $e;
-			}
-			/*foreach ($this->content as $element) {
-			 $element->toHtml();
-			}*/
+			$response = SplashUtils::buildControllerResponse(
+					function() use ($controller, $method, $args){
+						return call_user_func_array(array($controller,$method), $args);
+					}
+			);
+
 			$drupalTemplate = Mouf::getDrupalTemplate();
-			if ($drupalTemplate->isDisplayTriggered()) {
-				$drupalTemplate->getWebLibraryManager()->toHtml();
-				$drupalTemplate->getContentBlock()->toHtml();
+				
+			if ($response instanceof HtmlResponse) {
+				$htmlElement = $response->getHtmlElement();
+				if ($htmlElement instanceof DrupalTemplate) {
+					$htmlElement->getWebLibraryManager()->toHtml();
+					$htmlElement->getContentBlock()->toHtml();
+				} else {
+					$response->send();
+				}
+			} else {
+				ob_start();
+				$response->sendHeaders();
+				$response->sendContent();
+				if ($drupalTemplate->isDisplayTriggered()) {
+					$drupalTemplate->getWebLibraryManager()->toHtml();
+					$drupalTemplate->getContentBlock()->toHtml();
+					
+				}
+				$result = ob_get_clean();
 			}
-			$result = ob_get_clean();
 			
 			foreach ($filters as $filter) {
 				$filter->afterAction();
