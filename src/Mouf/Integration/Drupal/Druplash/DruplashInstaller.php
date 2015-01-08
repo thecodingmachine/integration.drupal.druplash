@@ -10,6 +10,8 @@ namespace Mouf\Integration\Drupal\Druplash;
 use Mouf\Installer\PackageInstallerInterface;
 use Mouf\MoufManager;
 use Mouf\Html\Renderer\RendererUtils;
+use Mouf\Actions\InstallUtils;
+use Mouf\Html\Renderer\ChainableRendererInterface;
 
 /**
  * An installer class for Druplash.

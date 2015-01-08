@@ -23,8 +23,8 @@
 		"mouf/utils.session.session-manager" : "~2.0",
 		"php" : ">=5.3.0",
 		"mouf/integration.drupal.druplash-drupalmodule" : "7.0.*",
-		"mouf/html.template.templateinterface" : "~2.0",
-		"mouf/html.utils.weblibrarymanager": "~3.0",
+		"mouf/html.template.templateinterface" : "~2.1",
+		"mouf/html.utils.weblibrarymanager" : "~3.0",
 		"mouf/mvc.splash-common" : "~5.0"
 	},
 	"provide" : {
