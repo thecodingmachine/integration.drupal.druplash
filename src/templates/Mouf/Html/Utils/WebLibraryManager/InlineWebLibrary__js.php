@@ -5,6 +5,9 @@ if ($jsElement) {
 	ob_start();
 	$jsElement->toHtml();
 	$content = ob_get_clean();
+	if(strpos($content, "<script") !== false) {
+		$content = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $content);
+	}
 	drupal_add_js($content, 'inline');
 }
 
