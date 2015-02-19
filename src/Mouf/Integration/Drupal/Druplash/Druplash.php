@@ -264,6 +264,7 @@ class Druplash {
 			if ($response instanceof HtmlResponse) {
 				$htmlElement = $response->getHtmlElement();
 				if ($htmlElement instanceof DrupalTemplate) {
+                    $response->sendHeaders();
 					ob_start();
 					$htmlElement->toHtml();
 					$htmlElement->getWebLibraryManager()->toHtml();
