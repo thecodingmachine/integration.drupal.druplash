@@ -1,7 +1,8 @@
 <?php
+
 /*
  * Copyright (c) 2013-2014 David Negrier
- * 
+ *
  * See the file LICENSE.txt for copying permission.
  */
 
@@ -9,76 +10,75 @@ namespace Mouf\Integration\Drupal\Druplash;
 
 use Mouf\Installer\PackageInstallerInterface;
 use Mouf\MoufManager;
-use Mouf\Html\Renderer\RendererUtils;
 use Mouf\Actions\InstallUtils;
 use Mouf\Html\Renderer\ChainableRendererInterface;
 
 /**
  * An installer class for Druplash.
  */
-class DruplashInstaller implements PackageInstallerInterface {
+class DruplashInstaller implements PackageInstallerInterface
+{
+    /**
+     * (non-PHPdoc).
+     *
+     * @see \Mouf\Installer\PackageInstallerInterface::install()
+     */
+    public static function install(MoufManager $moufManager)
+    {
+        if ($moufManager->instanceExists('sessionManager')) {
+            $moufManager->removeComponent('sessionManager');
+        }
+        $drupalSessionManager = $moufManager->createInstance('Mouf\\Integration\\Drupal\\Druplash\\DrupalSessionManager');
+        $drupalSessionManager->setName('sessionManager');
 
-	/**
-	 * (non-PHPdoc)
-	 * @see \Mouf\Installer\PackageInstallerInterface::install()
-	 */
-	public static function install(MoufManager $moufManager) {
-		if ($moufManager->instanceExists("sessionManager")) {
-			$moufManager->removeComponent("sessionManager");
-		}
-		$drupalSessionManager = $moufManager->createInstance("Mouf\\Integration\\Drupal\\Druplash\\DrupalSessionManager");
-		$drupalSessionManager->setName("sessionManager");
-		
-		
-		// Remove old deprecated defaultWebLibraryRenderer
-		if ($moufManager->instanceExists("defaultWebLibraryRenderer")) {
-			// Let's remove the default defaultWebLibraryRenderer :)
-			$moufManager->removeComponent("defaultWebLibraryRenderer");
-		}
-		
-		// Create the drupalTemplate instance
-		$contentBlockDescriptor = InstallUtils::getOrCreateInstance("block.content", "Mouf\\Html\\HtmlElement\\HtmlBlock", $moufManager);
-		
-		$drupalTemplateDescriptor = InstallUtils::getOrCreateInstance("drupalTemplate", "Mouf\\Integration\\Drupal\\Druplash\\DrupalTemplate", $moufManager);
-		if ($drupalTemplateDescriptor->getProperty("contentBlock")->getValue() == null) {
-			$drupalTemplateDescriptor->getProperty("contentBlock")->setValue($contentBlockDescriptor);
-		}
-		
-		$webLibraryManager = $moufManager->getInstanceDescriptor('defaultWebLibraryManager');
-		if ($webLibraryManager && $drupalTemplateDescriptor->getProperty('webLibraryManager')->getValue() == null) {
-			$drupalTemplateDescriptor->getProperty('webLibraryManager')->setValue($webLibraryManager);
-		}
-		
-		// Let's delete and recreate the DrupalRightService.
-		if ($moufManager->instanceExists("rightsService")) {
-			$moufManager->removeComponent("rightsService");
-		}
-		
-		$rightsService = $moufManager->createInstance("Mouf\\Integration\\Drupal\\Druplash\\DruplashRightService");
-		$rightsService->setName("rightsService");
-		if ($moufManager->instanceExists("errorLogLogger")) {
-			$rightsService->getProperty("log")->setValue($moufManager->getInstanceDescriptor("errorLogLogger"));
-		}
-		
-		if ($moufManager->instanceExists("userService")) {
-			$userService = $moufManager->getInstanceDescriptor("userService");
-			$rightsService->getProperty("userService")->setValue($userService);
-		
-			$prevValues = $userService->getProperty('authenticationListeners')->getValue();
-			$prevValues[] = $rightsService;
-			$userService->getProperty('authenticationListeners')->setValue($prevValues);
-		}
-		
-		$druplashRenderer = InstallUtils::getOrCreateInstance("druplashRenderer", "Mouf\\Html\\Renderer\\FileBasedRenderer", $moufManager);
-		$druplashRenderer->getProperty("directory")->setValue("vendor/mouf/integration.drupal.druplash/src/templates");
-		$druplashRenderer->getProperty("cacheService")->setValue($moufManager->getInstanceDescriptor("rendererCacheService"));
-		$druplashRenderer->getProperty("type")->setValue(ChainableRendererInterface::TYPE_TEMPLATE);
-		$druplashRenderer->getProperty("priority")->setValue(0);
-		$drupalTemplateDescriptor->getProperty("templateRenderer")->setValue($druplashRenderer);
-		$drupalTemplateDescriptor->getProperty("defaultRenderer")->setValue($moufManager->getInstanceDescriptor("defaultRenderer"));
-		
-		
-		// Let's rewrite the MoufComponents.php file to save the component
-		$moufManager->rewriteMouf();
-	}
+        // Remove old deprecated defaultWebLibraryRenderer
+        if ($moufManager->instanceExists('defaultWebLibraryRenderer')) {
+            // Let's remove the default defaultWebLibraryRenderer :)
+            $moufManager->removeComponent('defaultWebLibraryRenderer');
+        }
+
+        // Create the drupalTemplate instance
+        $contentBlockDescriptor = InstallUtils::getOrCreateInstance('block.content', 'Mouf\\Html\\HtmlElement\\HtmlBlock', $moufManager);
+
+        $drupalTemplateDescriptor = InstallUtils::getOrCreateInstance('drupalTemplate', 'Mouf\\Integration\\Drupal\\Druplash\\DrupalTemplate', $moufManager);
+        if ($drupalTemplateDescriptor->getProperty('contentBlock')->getValue() == null) {
+            $drupalTemplateDescriptor->getProperty('contentBlock')->setValue($contentBlockDescriptor);
+        }
+
+        $webLibraryManager = $moufManager->getInstanceDescriptor('defaultWebLibraryManager');
+        if ($webLibraryManager && $drupalTemplateDescriptor->getProperty('webLibraryManager')->getValue() == null) {
+            $drupalTemplateDescriptor->getProperty('webLibraryManager')->setValue($webLibraryManager);
+        }
+
+        // Let's delete and recreate the DrupalRightService.
+        if ($moufManager->instanceExists('rightsService')) {
+            $moufManager->removeComponent('rightsService');
+        }
+
+        $rightsService = $moufManager->createInstance('Mouf\\Integration\\Drupal\\Druplash\\DruplashRightService');
+        $rightsService->setName('rightsService');
+        if ($moufManager->instanceExists('errorLogLogger')) {
+            $rightsService->getProperty('log')->setValue($moufManager->getInstanceDescriptor('errorLogLogger'));
+        }
+
+        if ($moufManager->instanceExists('userService')) {
+            $userService = $moufManager->getInstanceDescriptor('userService');
+            $rightsService->getProperty('userService')->setValue($userService);
+
+            $prevValues = $userService->getProperty('authenticationListeners')->getValue();
+            $prevValues[] = $rightsService;
+            $userService->getProperty('authenticationListeners')->setValue($prevValues);
+        }
+
+        $druplashRenderer = InstallUtils::getOrCreateInstance('druplashRenderer', 'Mouf\\Html\\Renderer\\FileBasedRenderer', $moufManager);
+        $druplashRenderer->getProperty('directory')->setValue('vendor/mouf/integration.drupal.druplash/src/templates');
+        $druplashRenderer->getProperty('cacheService')->setValue($moufManager->getInstanceDescriptor('rendererCacheService'));
+        $druplashRenderer->getProperty('type')->setValue(ChainableRendererInterface::TYPE_TEMPLATE);
+        $druplashRenderer->getProperty('priority')->setValue(0);
+        $drupalTemplateDescriptor->getProperty('templateRenderer')->setValue($druplashRenderer);
+        $drupalTemplateDescriptor->getProperty('defaultRenderer')->setValue($moufManager->getInstanceDescriptor('defaultRenderer'));
+
+        // Let's rewrite the MoufComponents.php file to save the component
+        $moufManager->rewriteMouf();
+    }
 }
