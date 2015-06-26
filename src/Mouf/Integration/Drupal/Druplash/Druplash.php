@@ -111,14 +111,20 @@ class Druplash {
 			$phpDocComment = new MoufPhpDocComment($urlCallback->fullComment);
 			$requiresRightArray = $phpDocComment->getAnnotations('RequiresRight');
 			$accessArguments = array();
-			if(count($requiresRightArray)) {
-				foreach ($requiresRightArray as $requiresRight) {
-					/* @var $requiresRight RequiresRight */
-					$accessArguments[] = $requiresRight->getName();
-				}
-			} else {
-				$accessArguments[] = 'access content';
-			}
+            if(count($requiresRightArray)) {
+                /* @var $requiresRight Mouf\Annotations\RequiresRightAnnotation */
+                foreach ($requiresRightArray as $requiresRight) {
+                    $instanceName = $requiresRight->getInstanceName();
+                    $rightService = MoufManager::getMoufManager()->get($instanceName);
+                    if ($rightService instanceof DruplashRightService) {
+                        $accessArguments[] = $requiresRight->getName();
+                    }
+                }
+            }
+
+            if (empty($accessArguments)) {
+                $accessArguments[] = 'access content';
+            }
 			
 			$httpMethods = $urlCallback->httpMethods;
 			if (empty($httpMethods)) {
