@@ -65,6 +65,10 @@ class Druplash
             $urlPartsNew = array();
             $parametersList = array();
 
+            if (count($urlParts) >= MENU_MAX_PARTS) {
+                throw new SplashException("Too many parts in URL. Drupal can only support URLs up to ".MENU_MAX_PARTS." parts. URL: ".$url);
+            }
+
             for ($i = 0; $i < count($urlParts); ++$i) {
                 $urlPart = $urlParts[$i];
                 if (strpos($urlPart, '{') === 0 && strpos($urlPart, '}') === strlen($urlPart) - 1) {
