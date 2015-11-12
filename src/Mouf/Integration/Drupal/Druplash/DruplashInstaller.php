@@ -61,14 +61,14 @@ class DruplashInstaller implements PackageInstallerInterface
             $rightsService->getProperty('log')->setValue($moufManager->getInstanceDescriptor('errorLogLogger'));
         }
 
-        if ($moufManager->instanceExists('userService')) {
-            $userService = $moufManager->getInstanceDescriptor('userService');
-            $rightsService->getProperty('userService')->setValue($userService);
+        $userService = InstallUtils::getOrCreateInstance('userService', 'Mouf\\Integration\\Drupal\\Druplash\\DruplashUserService');
 
-            $prevValues = $userService->getProperty('authenticationListeners')->getValue();
-            $prevValues[] = $rightsService;
-            $userService->getProperty('authenticationListeners')->setValue($prevValues);
-        }
+        $rightsService->getProperty('userService')->setValue($userService);
+
+        $prevValues = $userService->getProperty('authenticationListeners')->getValue();
+        $prevValues[] = $rightsService;
+        $userService->getProperty('authenticationListeners')->setValue($prevValues);
+
 
         $druplashRenderer = InstallUtils::getOrCreateInstance('druplashRenderer', 'Mouf\\Html\\Renderer\\FileBasedRenderer', $moufManager);
         $druplashRenderer->getProperty('directory')->setValue('vendor/mouf/integration.drupal.druplash/src/templates');
