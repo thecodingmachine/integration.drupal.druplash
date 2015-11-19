@@ -15,8 +15,11 @@ use Mouf\Mvc\Splash\Services\SplashUtils;
 use Mouf\MoufManager;
 use Mouf;
 use Mouf\MoufException;
+use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Mouf\Mvc\Splash\HtmlResponse;
+use Mouf\Mvc\Splash\Services\UrlProviderInterface;
+use Zend\Diactoros\ServerRequestFactory;
 
 /**
  * Main class in charge of routing.
@@ -26,22 +29,41 @@ use Mouf\Mvc\Splash\HtmlResponse;
 class Druplash
 {
     /**
+     * List of objects that provide routes.
+     *
+     * @var UrlProviderInterface[]
+     */
+    private $routeProviders = [];
+
+    /**
+     * A pointer to the drupalTemplate.
+     *
+     * @var DrupalTemplate
+     */
+    private $drupalTemplate;
+
+    /**
+     * @param UrlProviderInterface[] $routeProviders List of objects that provide routes.
+     * @param DrupalTemplate $drupalTemplate A pointer to the drupalTemplate.
+     */
+    public function __construct(array $routeProviders, DrupalTemplate $drupalTemplate)
+    {
+        $this->routeProviders = $routeProviders;
+        $this->drupalTemplate = $drupalTemplate;
+    }
+
+    /**
      * Returns the list of URLs expected by hook_menu.
      */
-    public static function getDrupalMenus()
+    public function getDrupalMenus()
     {
         $allConstants = get_defined_constants();
-// 		$urlsList = SplashUtils::getSplashUrlManager()->getUrlsList(false);
-
-        $moufManager = MoufManager::getMoufManager();
-        $instanceNames = $moufManager->findInstances('Mouf\\Mvc\\Splash\\Services\\UrlProviderInterface');
 
         $urlsList = array();
 
-        foreach ($instanceNames as $instanceName) {
-            $urlProvider = $moufManager->getInstance($instanceName);
-            /* @var $urlProvider UrlProviderInterface */
-            $tmpUrlList = $urlProvider->getUrlsList();
+        foreach ($this->routeProviders as $routeProvider) {
+            /* @var $routeProvider UrlProviderInterface */
+            $tmpUrlList = $routeProvider->getUrlsList(null);
             $urlsList = array_merge($urlsList, $tmpUrlList);
         }
 
@@ -176,7 +198,7 @@ class Druplash
      *
      * @param string $actions
      */
-    public static function executeAction($actions)
+    public function executeAction($actions)
     {
         $httpMethod = $_SERVER['REQUEST_METHOD'];
 
@@ -192,12 +214,18 @@ class Druplash
 
         $controller = MoufManager::getMoufManager()->getInstance($action['instance']);
 
-        return self::callAction($controller, $action['method'], $action['urlParameters'], $action['parameters'], $action['filters']);
+        return $this->callAction($controller, $action['method'], $action['urlParameters'], $action['parameters'], $action['filters']);
     }
 
-    protected static function callAction($controller, $method, $urlParameters, $parameters, $filters)
+    protected function callAction($controller, $method, $urlParameters, $parameters, $filters)
     {
-        $request = Request::createFromGlobals();
+        $request = ServerRequestFactory::fromGlobals(
+            $_SERVER,
+            $_GET,
+            $_POST,
+            $_COOKIE,
+            $_FILES
+        );
 
         // Default action is "defaultAction" or "index"
         if (empty($method)) {
@@ -255,24 +283,29 @@ class Druplash
                     }
             );
 
-            $drupalTemplate = Mouf::getDrupalTemplate();
+            $drupalTemplate = $this->drupalTemplate;
 
-            if ($response instanceof HtmlResponse) {
+            if (!$response instanceof ResponseInterface) {
+                throw new DruplashException("Your controller should return an object implementing the ResponseInterface");
+            }
+
+            if ($response instanceof HtmlResponse && $response->getHtmlElement() === $this->drupalTemplate) {
                 $htmlElement = $response->getHtmlElement();
-                if ($htmlElement instanceof DrupalTemplate) {
-                    $response->sendHeaders();
-                    ob_start();
-                    $htmlElement->toHtml();
-                    $htmlElement->getWebLibraryManager()->toHtml();
-                    $htmlElement->getContentBlock()->toHtml();
-                    $result = ob_get_clean();
-                } else {
-                    $response->send();
-                }
+
+                ob_start();
+                // Emit the response to emit the correct headers (if needed)
+                // Do not disable the flush.
+                $emitter = new \Zend\Diactoros\Response\SapiEmitter();
+                $emitter->emit($response, 9999);
+
+                $htmlElement->toHtml();
+                $htmlElement->getWebLibraryManager()->toHtml();
+                $htmlElement->getContentBlock()->toHtml();
+                $result = ob_get_clean();
             } else {
                 ob_start();
-                $response->sendHeaders();
-                $response->sendContent();
+                $emitter = new \Zend\Diactoros\Response\SapiEmitter();
+                $emitter->emit($response, 9999);
                 if ($drupalTemplate->isDisplayTriggered()) {
                     $drupalTemplate->getWebLibraryManager()->toHtml();
                     $drupalTemplate->getContentBlock()->toHtml();
@@ -302,7 +335,7 @@ class Druplash
      * This will return a list of all DrupalDynamicBlock instances to Drupal's hook_block
      * (in the format described at http://api.drupal.org/api/function/hook_block/6).
      */
-    public static function getDrupalBlocks()
+    public function getDrupalBlocks()
     {
         $moufManager = MoufManager::getMoufManager();
 
@@ -332,7 +365,7 @@ class Druplash
      *
      * @param string $instanceName
      */
-    public static function getDrupalBlock($instanceName)
+    public function getDrupalBlock($instanceName)
     {
         $moufManager = MoufManager::getMoufManager();
         $moufBlock = $moufManager->getInstance($instanceName);
@@ -347,7 +380,7 @@ class Druplash
      * @param array    $edit
      * @param stdClass $account
      */
-    public static function onUserLogin($edit, $account)
+    public function onUserLogin($edit, $account)
     {
         //TODO: an admin page will be necessary to select which user service instance to use.
         $moufManager = MoufManager::getMoufManager();
@@ -364,7 +397,7 @@ class Druplash
      *
      * @param stdClass $account
      */
-    public static function onUserLogout($account)
+    public function onUserLogout($account)
     {
         //TODO: an admin page will be necessary to select which user service instance to use.
         $moufManager = MoufManager::getMoufManager();
@@ -378,7 +411,7 @@ class Druplash
     /**
      * Returns all permissions for hook_permission.
      */
-    public static function getPermissions()
+    public function getPermissions()
     {
         //TODO: an admin page will be necessary to select which right service instance to use.
         $moufManager = MoufManager::getMoufManager();
@@ -406,7 +439,7 @@ class Druplash
      *
      * @return array
      */
-    private static function mapParameters(MoufReflectionMethod $refMethod, array $urlParameters)
+    private function mapParameters(MoufReflectionMethod $refMethod, array $urlParameters)
     {
         $parameters = $refMethod->getParameters();
 

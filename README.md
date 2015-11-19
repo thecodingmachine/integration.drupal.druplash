@@ -2,11 +2,11 @@ Getting started
 ===============
 
 Druplash is a MVC framework for Drupal. It is actually an adaptation of [Mouf's Splash MVC framework](https://github.com/thecodingmachine/mvc.splash).
-If you have a project developped with Splash, you can completely reuse your code, right into a Drupal installation.  
+If you have a project developed with Splash, you can completely reuse your code, right into a Drupal installation.  
 
-To get started, you first need to set up your environnement.
+To get started, you first need to set up your environment.
 
-Use this *composer.json* file to install an environement with Drupal and Druplash.
+Use this *composer.json* file to install an environment with Drupal and Druplash.
 
 	{
 	    "require": {
