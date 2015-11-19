@@ -79,6 +79,17 @@ class DruplashInstaller implements PackageInstallerInterface
         $drupalTemplateDescriptor->getProperty('templateRenderer')->setValue($druplashRenderer);
         $drupalTemplateDescriptor->getProperty('defaultRenderer')->setValue($moufManager->getInstanceDescriptor('defaultRenderer'));
 
+        $druplash = InstallUtils::getOrCreateInstance('druplash', 'Mouf\\Integration\\Drupal\\Druplash\\Druplash', $moufManager);
+        $moufExplorerUrlProvider = InstallUtils::getOrCreateInstance('moufExplorerUrlProvider', 'Mouf\\Mvc\\Splash\\Services\\MoufExplorerUrlProvider', $moufManager);
+
+        if (!$druplash->getConstructorArgumentProperty('routeProviders')->isValueSet()) {
+            $druplash->getConstructorArgumentProperty('routeProviders')->setValue(array(0 => $moufExplorerUrlProvider, ));
+        }
+        if (!$druplash->getConstructorArgumentProperty('drupalTemplate')->isValueSet()) {
+            $druplash->getConstructorArgumentProperty('drupalTemplate')->setValue($drupalTemplateDescriptor);
+        }
+
+
         // Let's rewrite the MoufComponents.php file to save the component
         $moufManager->rewriteMouf();
     }
