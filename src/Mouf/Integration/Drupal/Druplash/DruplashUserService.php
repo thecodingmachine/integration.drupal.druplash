@@ -3,6 +3,7 @@
 
 namespace Mouf\Integration\Drupal\Druplash;
 
+use Mouf\Security\UserService\AuthenticationListenerInterface;
 use Mouf\Security\UserService\UserServiceInterface;
 
 /**
@@ -21,7 +22,7 @@ class DruplashUserService implements UserServiceInterface
      *
      * @Property
      * @Compulsory
-     * @var array<AuthenticationListenerInterface>
+     * @var AuthenticationListenerInterface[]
      */
     public $authenticationListeners;
 

@@ -61,7 +61,8 @@ class DruplashInstaller implements PackageInstallerInterface
             $rightsService->getProperty('log')->setValue($moufManager->getInstanceDescriptor('errorLogLogger'));
         }
 
-        $userService = InstallUtils::getOrCreateInstance('userService', 'Mouf\\Integration\\Drupal\\Druplash\\DruplashUserService');
+        $moufManager->declareComponent('userService', 'Mouf\\Integration\\Drupal\\Druplash\\DruplashUserService', false, MoufManager::DECLARE_ON_EXIST_KEEP_INCOMING_LINKS );
+        $userService = $moufManager->getInstanceDescriptor('userService');
 
         $rightsService->getProperty('userService')->setValue($userService);
 
