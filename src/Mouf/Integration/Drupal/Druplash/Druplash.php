@@ -9,14 +9,12 @@ use Mouf\Mvc\Splash\Utils\ApplicationException;
 use Mouf\Reflection\MoufReflectionMethod;
 use Mouf\Reflection\MoufReflectionClass;
 use Mouf\Reflection\MoufPhpDocComment;
-use Mouf\Reflection\MoufReflectionProxy;
 use Mouf\Mvc\Splash\Utils\SplashException;
 use Mouf\Mvc\Splash\Services\SplashUtils;
 use Mouf\MoufManager;
 use Mouf;
 use Mouf\MoufException;
 use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Mouf\Mvc\Splash\HtmlResponse;
 use Mouf\Mvc\Splash\Services\UrlProviderInterface;
 use Zend\Diactoros\ServerRequestFactory;
@@ -339,7 +337,7 @@ class Druplash
     {
         $moufManager = MoufManager::getMoufManager();
 
-        $instanceNames = MoufReflectionProxy::getInstances('Mouf\\Integration\\Drupal\\Druplash\\DrupalDynamicBlockInterface', false);
+        $instanceNames = $moufManager->findInstances('Mouf\\Integration\\Drupal\\Druplash\\DrupalDynamicBlockInterface');
 
         $blocks = array();
 
@@ -427,85 +425,5 @@ class Druplash
             return array();
         }
     }
-
-    /**
-     * Analyses the method, the annotation parameters, and returns an array to be passed to the method.
-     * TODO: optimize, remove mapParameters and use preprocessed values.
-     *
-     * @param MoufReflectionMethod $refMethod
-     * @param array<string, int>   $urlParameters An array mapping the parameter name to its position in the URL (0 being the left-most position)
-     *
-     * @throws \Mouf\Integration\Drupal\Druplash\ApplicationException
-     *
-     * @return array
-     */
-    private function mapParameters(MoufReflectionMethod $refMethod, array $urlParameters)
-    {
-        $parameters = $refMethod->getParameters();
-
-        // Let's analyze the @param annotations.
-        $paramAnnotations = $refMethod->getAnnotations('param');
-
-        $values = array();
-        foreach ($parameters as $parameter) {
-            // First, is this a parameter from the path of the URL?
-            if (isset($urlParameters[$parameter->getName()])) {
-                $pos = $urlParameters[$parameter->getName()];
-                $values[] = arg($pos);
-                continue;
-            }
-
-            // Second step: let's see if there is an @param annotation for that parameter.
-            $found = false;
-            if ($paramAnnotations != null) {
-                foreach ($paramAnnotations as $annotation) {
-                    /* @var paramAnnotation $annotation */
-
-                    if ($annotation->getParameterName() == $parameter->getName()) {
-                        $value = $annotation->getValue();
-
-                        if ($value !== null) {
-                            $values[] = $value;
-                        } else {
-                            if ($parameter->isDefaultValueAvailable()) {
-                                $values[] = $parameter->getDefaultValue();
-                            } else {
-                                // No default value and no parameter... this is an error!
-                                // TODO: we could provide a special annotation to redirect on another action on error.
-                                $application_exception = new ApplicationException();
-                                $application_exception->setTitle('controller.incorrect.parameter.title', $refMethod->getDeclaringClass()->getName(), $refMethod->getName(), $parameter->getName());
-                                $application_exception->setMessage('controller.incorrect.parameter.text', $refMethod->getDeclaringClass()->getName(), $refMethod->getName(), $parameter->getName());
-                                throw $application_exception;
-                            }
-                        }
-                        $found = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!$found) {
-                // There is no annotation for the parameter.
-                // Let's map it to the request.
-                $paramValue = isset($_REQUEST[$parameter->getName()]) ? $_REQUEST[$parameter->getName()] : null;
-
-                if ($paramValue !== null) {
-                    $values[] = $paramValue;
-                } else {
-                    if ($parameter->isDefaultValueAvailable()) {
-                        $values[] = $parameter->getDefaultValue();
-                    } else {
-                        // No default value and no parameter... this is an error!
-                        // TODO: we could provide a special annotation to redirect on another action on error.
-                        $application_exception = new ApplicationException();
-                        $application_exception->setTitle('controller.incorrect.parameter.title', $refMethod->getDeclaringClass()->getName(), $refMethod->getName(), $parameter->getName());
-                        $application_exception->setMessage('controller.incorrect.parameter.text', $refMethod->getDeclaringClass()->getName(), $refMethod->getName(), $parameter->getName());
-                        throw $application_exception;
-                    }
-                }
-            }
-        }
-
-        return $values;
-    }
+    
 }
