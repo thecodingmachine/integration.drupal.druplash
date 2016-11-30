@@ -1,0 +1,5 @@
+name: Druplash
+type: module
+description: "Integrates the Splash router into Drupal"
+package: TheCodingMachine
+core: 8.x
