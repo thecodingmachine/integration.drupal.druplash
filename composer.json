@@ -20,9 +20,15 @@
 		"php" : ">=7.0",
 		"composer/installers" : "*",
 		"drupal/core": "^8.0",
+		"thecodingmachine/drupal-stratigility-bridge": "^0.3",
 		"mouf/html.template.templateinterface" : "^2.1",
 		"mouf/html.utils.weblibrarymanager" : "^3.0",
-		"mouf/mvc.splash-common" : "^8.0"
+		"mouf/mvc.splash-common" : "^8.0",
+		"container-interop/service-provider": "^0.3"
+	},
+	"require-dev": {
+		"puli/cli":"^1.0",
+		"puli/composer-plugin": "^1.0"
 	},
 	"provide" : {
 		"mouf/mvc.splash-implementation" : "8.0.*"
@@ -33,9 +39,7 @@
 		}
 	},
 	"extra" : {
-		"installer-paths" : {
-			"sites/all/modules/druplash/" : "mouf/integration.drupal.druplash-drupalmodule"
-		},
+		"installer-name" : "druplash",
 		"mouf" : {
 			"logo" : "logo.png",
 			"install" : [{
@@ -56,5 +60,7 @@
 				}
 			]
 		}
-	}
+	},
+	"minimum-stability": "dev",
+	"prefer-stable": true
 }
