@@ -3,6 +3,7 @@
 
 namespace Drupal\druplash;
 
+use Interop\Container\ContainerInterface;
 use Interop\Container\ServiceProvider;
 use Mouf\Mvc\Splash\Routers\SplashDefaultRouter;
 
