@@ -1,0 +1,10 @@
+services:
+  content.block:
+    class: Mouf\Html\HtmlElement\HtmlBlock
+  drupal_template:
+    class: Drupal\druplash\DrupalTemplate
+    arguments: ['@drupal_array_render_caller', '@content.block']
+  drupal\druplash\drupaltemplate:
+    alias: drupal_template
+  mouf\html\template\templateinterface:
+    alias: drupal_template

@@ -1,13 +1,15 @@
 <?php
 
-namespace Mouf\Integration\Drupal\Druplash;
+namespace Drupal\druplash;
 
+use Drupal\stratigility_bridge\DrupalArrayRenderCaller;
 use Mouf\Html\HtmlElement\HtmlBlock;
+use Mouf\Html\HtmlElement\HtmlElementInterface;
 use Mouf\Html\Template\BaseTemplate\BaseTemplate;
 
 /**
  * This class represents the template currently configured in Drupal.
- * It always comes with a "drupalTemplate" instance and you should call the "toHtml" method to trigger a rendering of the
+ * Calling the "toHtml" method will trigger a rendering of the
  * template in Drupal.
  *
  * @author David Négrier
@@ -21,20 +23,24 @@ class DrupalTemplate extends BaseTemplate
      */
     protected $displayTriggered = false;
 
-    public function getContentBlock()
-    {
-        return $this->content;
-    }
+    /**
+     * The object in charge of the rendering in Drupal.
+     *
+     * @var DrupalArrayRenderCaller
+     */
+    private $arrayRenderCaller;
+
+    private $libraries = [];
 
     /**
-     * The content of the page is represented by this object.
-     * Using this object, you can add content to your page.
-     *
-     * @param HtmlBlock $value
+     * @param DrupalArrayRenderCaller $arrayRenderCaller The object in charge of the rendering in Drupal.
+     * @param HtmlElementInterface $content The content of the page.
      */
-    public function setContentBlock($value)
+    public function __construct(DrupalArrayRenderCaller $arrayRenderCaller, HtmlElementInterface $content)
     {
-        $this->content = $value;
+        parent::__construct();
+        $this->arrayRenderCaller = $arrayRenderCaller;
+        $this->content = $content;
     }
 
     /**
@@ -47,19 +53,39 @@ class DrupalTemplate extends BaseTemplate
     public function toHtml()
     {
         // Let's register the template renderer in the default renderer.
-        $this->getDefaultRenderer()->setTemplateRenderer($this->getTemplateRenderer());
 
-        drupal_set_title($this->getTitle());
-        $this->displayTriggered = true;
+        // TODO
+        // FIXME
+        //$this->getDefaultRenderer()->setTemplateRenderer($this->getTemplateRenderer());
+
+        ob_start();
+        $this->content->toHtml();
+        $content = ob_get_clean();
+
+        $this->arrayRenderCaller->getResponse(array(
+            '#type' => 'markup',
+            '#title' => $this->getTitle(),
+            '#markup' => $content,
+            '#attached' => [
+                'library' => $this->libraries
+            ]
+        ));
+
+        echo 'template';
+    }
+
+    public function getWebLibraryManager()
+    {
+        throw new \BadMethodCallException('Sorry, Druplash 8 does not support the WebLibraryManager concept due to restrictions in ways Drupal handles JS/CSS libraries. Use the "addLibrary" method instead.');
     }
 
     /**
-     * Returns true if the toHtml method has been called, false otherwise.
+     * Adds a Drupal library to the template (as defined in https://www.drupal.org/docs/8/creating-custom-modules/adding-stylesheets-css-and-javascript-js-to-a-drupal-8-module )
      *
-     * @return bool
+     * @param string $library
      */
-    public function isDisplayTriggered()
+    public function addLibrary(string $library)
     {
-        return $this->displayTriggered;
+        $this->libraries[] = $library;
     }
 }

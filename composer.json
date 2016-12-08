@@ -25,7 +25,9 @@
 		"mouf/html.utils.weblibrarymanager" : "^3.0",
 		"mouf/mvc.splash-common" : "^8.0",
 		"container-interop/service-provider": "^0.3",
-		"thecodingmachine/stash-universal-module": "^1.0"
+		"thecodingmachine/stash-universal-module": "^1.0",
+		"mouf/security.rightsservice-splash": "^8.0",
+		"mouf/security.userservice-splash": "^8.0"
 	},
 	"require-dev": {
 		"puli/cli":"^1.0",
