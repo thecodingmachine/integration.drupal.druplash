@@ -21,6 +21,7 @@
 		"composer/installers" : "*",
 		"drupal/core": "^8.0",
 		"thecodingmachine/drupal-stratigility-bridge": "^0.3",
+		"thecodingmachine/drupal-service-provider-bridge": "^0.3",
 		"mouf/html.template.templateinterface" : "^2.1",
 		"mouf/html.utils.weblibrarymanager" : "^3.0",
 		"mouf/mvc.splash-common" : "^8.0",

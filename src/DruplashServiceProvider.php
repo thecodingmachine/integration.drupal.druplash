@@ -6,6 +6,8 @@ namespace Drupal\druplash;
 use Interop\Container\ContainerInterface;
 use Interop\Container\ServiceProvider;
 use Mouf\Mvc\Splash\Routers\SplashDefaultRouter;
+use Mouf\Mvc\Splash\Services\ControllerAnalyzer;
+use Mouf\Mvc\Splash\Services\ControllerRegistry;
 
 class DruplashServiceProvider implements ServiceProvider
 {
@@ -29,7 +31,8 @@ class DruplashServiceProvider implements ServiceProvider
     public function getServices()
     {
         return [
-            'stratigility_pipe' => [ self::class, 'registerSplashInStratigilityPipe' ]
+            'stratigility_pipe' => [ self::class, 'registerSplashInStratigilityPipe' ],
+            ControllerRegistry::class => [self::class, 'overloadControllerRegistry'],
         ];
     }
 
@@ -39,5 +42,12 @@ class DruplashServiceProvider implements ServiceProvider
 
         $stratigilityPipe->pipe($container->get(SplashDefaultRouter::class));
         return $stratigilityPipe;
+    }
+
+    public static function overloadControllerRegistry(ContainerInterface $container) : ControllerRegistry
+    {
+        return new ControllerRegistry($container->get(ControllerAnalyzer::class),
+            $container->get('thecodingmachine.splash.controllers'),
+            new DruplashControllerExplorer($container->get(ControllerAnalyzer::class)));
     }
 }

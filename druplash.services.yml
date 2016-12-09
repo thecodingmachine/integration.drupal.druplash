@@ -8,3 +8,12 @@ services:
     alias: drupal_template
   mouf\html\template\templateinterface:
     alias: drupal_template
+  drupal\druplash\druplashuserservice:
+    class: Drupal\druplash\DruplashUserService
+    arguments: ['@user.auth', []]
+  mouf\security\userservice\userserviceinterface:
+    alias: drupal\druplash\druplashuserservice
+  drupal\druplash\druplashrightservice:
+    class: Drupal\druplash\DruplashRightService
+  mouf\security\rightsservice\rightsserviceinterface:
+    alias: drupal\druplash\druplashrightservice

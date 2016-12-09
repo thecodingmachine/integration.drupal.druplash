@@ -4,6 +4,12 @@ namespace Mouf\Integration\Drupal\Druplash;
 
 use Mouf\Utils\I18n\Fine\Language\LanguageDetectionInterface;
 
+// TODO: migrate this class
+// TODO: migrate this class
+// TODO: migrate this class
+// TODO: migrate this class
+// TODO: migrate this class
+
 /**
  * The DrupalLanguageDetection class returns the language detected by Drupal.
  * Of course, Drupal must be installed, and bootstraped.

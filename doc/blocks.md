@@ -1,3 +1,7 @@
+TODO: this is outdated (from Drupal 7)
+TODO: migrate this!
+
+
 Dynamic blocks with Druplash
 ============================
 
