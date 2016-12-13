@@ -1,13 +1,10 @@
 <?php
 
-
 namespace Drupal\druplash;
 
 use Doctrine\Common\Annotations\AnnotationException;
-use Mouf\MoufManager;
 use Mouf\Mvc\Splash\Services\ControllerAnalyzer;
 use Mouf\Mvc\Splash\Services\ControllerDetector;
-use Mouf\Mvc\Splash\Utils\SplashException;
 
 /**
  * This class scans the Mouf container in order to find all instances that point to classes containing a @URL or @Action annotation.
@@ -20,7 +17,9 @@ class DruplashControllerExplorer implements ControllerDetector
      * It is the name of the controller (in the container) that is returned (not the container itself).
      *
      * @param ControllerAnalyzer $controllerAnalyzer
+     *
      * @return array|\string[]
+     *
      * @throws \Drupal\Core\DependencyInjection\ContainerNotInitializedException
      * @throws AnnotationException
      */
@@ -75,11 +74,12 @@ class DruplashControllerExplorer implements ControllerDetector
      * If it has, let's display a big error message.
      *
      * @param string $className
+     *
      * @return bool
      */
     private function shouldBeController($className) : bool
     {
-        if (strpos($className, 'Controller') !== false && strpos($className, 'Drupal\\Core') === false ) {
+        if (strpos($className, 'Controller') !== false && strpos($className, 'Drupal\\Core') === false) {
             return true;
         }
 
@@ -91,6 +91,7 @@ class DruplashControllerExplorer implements ControllerDetector
         if (strpos($content, '@URL') !== false) {
             return true;
         }
+
         return false;
     }
 

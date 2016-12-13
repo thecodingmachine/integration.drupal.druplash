@@ -18,8 +18,10 @@ class DruplashRightService implements RightsServiceInterface
      * This method is overloaded for Drupal, because in Drupal, not authenticated users can have rights too.
      *
      * @param string $right
-     * @param mixed $scope
+     * @param mixed  $scope
+     *
      * @throws \InvalidArgumentException
+     *
      * @return bool
      */
     public function isAllowed($right, $scope = null)
@@ -39,8 +41,10 @@ class DruplashRightService implements RightsServiceInterface
      *
      * @param string $user_id
      * @param string $right
-     * @param mixed $scope
+     * @param mixed  $scope
+     *
      * @throws \InvalidArgumentException
+     *
      * @return bool
      */
     public function isUserAllowed($user_id, $right, $scope = null)
@@ -56,7 +60,6 @@ class DruplashRightService implements RightsServiceInterface
      * Rights are cached in session, this function will purge the rights in session.
      * This can be useful if you know the rights previously fetched for
      * the current user will change.
-     *
      */
     public function flushRightsCache()
     {
@@ -65,10 +68,10 @@ class DruplashRightService implements RightsServiceInterface
 
     /**
      * If the user has not the requested right, this function will
-     * redirect the user to an error page (or a login page...)
+     * redirect the user to an error page (or a login page...).
      *
      * @param string $right
-     * @param mixed $scope
+     * @param mixed  $scope
      */
     public function redirectNotAuthorized($right, $scope = null)
     {

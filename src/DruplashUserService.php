@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Drupal\druplash;
 
 use Drupal\user\Entity\User;
@@ -34,8 +33,9 @@ class DruplashUserService implements UserServiceInterface
 
     /**
      * DruplashUserService constructor.
+     *
      * @param \Drupal\user\UserAuthInterface $userAuth
-     * @param array $authenticationListeners
+     * @param array                          $authenticationListeners
      */
     public function __construct(UserAuthInterface $userAuth, array $authenticationListeners)
     {
@@ -49,6 +49,7 @@ class DruplashUserService implements UserServiceInterface
     public function addAuthenticationListener(AuthenticationListenerInterface $authenticationListener)
     {
         $this->authenticationListeners[] = $authenticationListener;
+
         return $this;
     }
 
@@ -58,7 +59,8 @@ class DruplashUserService implements UserServiceInterface
      *
      * @param string $user
      * @param string $password
-     * @return boolean.
+     *
+     * @return boolean
      */
     public function login($user, $password)
     {
@@ -116,7 +118,7 @@ class DruplashUserService implements UserServiceInterface
     /**
      * Returns "true" if the user is logged, "false" otherwise.
      *
-     * @return boolean
+     * @return bool
      */
     public function isLogged()
     {
@@ -126,7 +128,7 @@ class DruplashUserService implements UserServiceInterface
     /**
      * Redirects the user to the login page if he is not logged.
      *
-     * @return boolean
+     * @return bool
      */
     public function redirectNotLogged()
     {
@@ -135,7 +137,6 @@ class DruplashUserService implements UserServiceInterface
 
     /**
      * Logs the user off.
-     *
      */
     public function logoff()
     {

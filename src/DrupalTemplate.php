@@ -3,7 +3,6 @@
 namespace Drupal\druplash;
 
 use Drupal\stratigility_bridge\DrupalArrayRenderCaller;
-use Mouf\Html\HtmlElement\HtmlBlock;
 use Mouf\Html\HtmlElement\HtmlElementInterface;
 use Mouf\Html\Template\BaseTemplate\BaseTemplate;
 
@@ -33,8 +32,8 @@ class DrupalTemplate extends BaseTemplate
     private $libraries = [];
 
     /**
-     * @param DrupalArrayRenderCaller $arrayRenderCaller The object in charge of the rendering in Drupal.
-     * @param HtmlElementInterface $content The content of the page.
+     * @param DrupalArrayRenderCaller $arrayRenderCaller The object in charge of the rendering in Drupal
+     * @param HtmlElementInterface    $content           The content of the page
      */
     public function __construct(DrupalArrayRenderCaller $arrayRenderCaller, HtmlElementInterface $content)
     {
@@ -60,12 +59,12 @@ class DrupalTemplate extends BaseTemplate
             '#theme' => 'druplash_renderer',
             '#title' => $this->getTitle(),
             '#content' => $content,
-            '#cache' => ['max-age' => 0 ],
+            '#cache' => ['max-age' => 0],
             '#attached' => [
-                'library' => $this->libraries
-            ]
+                'library' => $this->libraries,
+            ],
         ));
-        
+
         echo 'template';
     }
 
@@ -75,7 +74,7 @@ class DrupalTemplate extends BaseTemplate
     }
 
     /**
-     * Adds a Drupal library to the template (as defined in https://www.drupal.org/docs/8/creating-custom-modules/adding-stylesheets-css-and-javascript-js-to-a-drupal-8-module )
+     * Adds a Drupal library to the template (as defined in https://www.drupal.org/docs/8/creating-custom-modules/adding-stylesheets-css-and-javascript-js-to-a-drupal-8-module ).
      *
      * @param string $library
      */
