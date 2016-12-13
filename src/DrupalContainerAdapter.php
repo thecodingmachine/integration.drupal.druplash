@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Drupal\druplash;
-
 
 use TheCodingMachine\Interop\ServiceProviderBridgeBundle\SymfonyContainerAdapter;
 

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Drupal\druplash;
 
 use Interop\Container\ContainerInterface;
@@ -11,7 +10,6 @@ use Mouf\Mvc\Splash\Services\ControllerRegistry;
 
 class DruplashServiceProvider implements ServiceProvider
 {
-
     /**
      * Returns a list of all container entries registered by this service provider.
      *
@@ -31,7 +29,7 @@ class DruplashServiceProvider implements ServiceProvider
     public function getServices()
     {
         return [
-            'stratigility_pipe' => [ self::class, 'registerSplashInStratigilityPipe' ],
+            'stratigility_pipe' => [self::class, 'registerSplashInStratigilityPipe'],
             ControllerRegistry::class => [self::class, 'overloadControllerRegistry'],
         ];
     }
@@ -41,6 +39,7 @@ class DruplashServiceProvider implements ServiceProvider
         $stratigilityPipe = $previous();
 
         $stratigilityPipe->pipe($container->get(SplashDefaultRouter::class));
+
         return $stratigilityPipe;
     }
 

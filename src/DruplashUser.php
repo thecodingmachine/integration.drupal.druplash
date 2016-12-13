@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Drupal\druplash;
-
 
 use Drupal\user\Entity\User;
 use Mouf\Security\UserService\UserInterface;
@@ -18,7 +16,6 @@ class DruplashUser implements UserInterface
     {
         $this->drupalUser = $drupalUser;
     }
-
 
     /**
      * Returns the ID for the current user.

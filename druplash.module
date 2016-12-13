@@ -1,0 +1,10 @@
+<?php
+function druplash_theme($existing, $type, $theme, $path) {
+    return ['druplash_renderer' =>
+        [
+            'variables' => [
+                'content' => ''
+            ]
+        ]
+    ];
+}
