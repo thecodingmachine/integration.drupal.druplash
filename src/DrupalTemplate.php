@@ -52,12 +52,6 @@ class DrupalTemplate extends BaseTemplate
      */
     public function toHtml()
     {
-        // Let's register the template renderer in the default renderer.
-
-        // TODO
-        // FIXME
-        //$this->getDefaultRenderer()->setTemplateRenderer($this->getTemplateRenderer());
-
         ob_start();
         $this->content->toHtml();
         $content = ob_get_clean();
