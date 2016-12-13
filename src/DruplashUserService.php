@@ -1,8 +1,10 @@
 <?php
 
 
-namespace Mouf\Integration\Drupal\Druplash;
+namespace Drupal\druplash;
 
+use Drupal\user\Entity\User;
+use Drupal\user\UserAuthInterface;
 use Mouf\Security\UserService\AuthenticationListenerInterface;
 use Mouf\Security\UserService\UserServiceInterface;
 
@@ -11,6 +13,12 @@ use Mouf\Security\UserService\UserServiceInterface;
  */
 class DruplashUserService implements UserServiceInterface
 {
+    /**
+     * The user authentication.
+     *
+     * @var UserAuthInterface
+     */
+    private $userAuth;
 
     /**
      * This is an array containing all components that should be notified
@@ -20,11 +28,29 @@ class DruplashUserService implements UserServiceInterface
      * For instance, the MoufRightsService, that manages the rights of users is
      * one of those.
      *
-     * @Property
-     * @Compulsory
      * @var AuthenticationListenerInterface[]
      */
-    public $authenticationListeners;
+    private $authenticationListeners = [];
+
+    /**
+     * DruplashUserService constructor.
+     * @param \Drupal\user\UserAuthInterface $userAuth
+     * @param array $authenticationListeners
+     */
+    public function __construct(UserAuthInterface $userAuth, array $authenticationListeners)
+    {
+        $this->userAuth = $userAuth;
+        $this->authenticationListeners = $authenticationListeners;
+    }
+
+    /**
+     * @return $this
+     */
+    public function addAuthenticationListener(AuthenticationListenerInterface $authenticationListener)
+    {
+        $this->authenticationListeners[] = $authenticationListener;
+        return $this;
+    }
 
     /**
      * Logs the user using the provided login and password.
@@ -36,20 +62,13 @@ class DruplashUserService implements UserServiceInterface
      */
     public function login($user, $password)
     {
-        if($uid = user_authenticate($user, $password)) {
-            $formState = array('uid' => $uid);
-            user_login_submit(array(), $formState);
+        $uid = $this->userAuth->authenticate($user, $password);
 
-            if (is_array($this->authenticationListeners)) {
-                foreach ($this->authenticationListeners as $listener) {
-                    $listener->afterLogIn($this);
-                }
-            }
-
-            return true;
-        } else {
+        if ($uid === false) {
             return false;
         }
+
+        return $this->loginWithoutPassword($user);
     }
 
     /**
@@ -71,8 +90,7 @@ class DruplashUserService implements UserServiceInterface
         if (empty($user)) {
             return false;
         } else {
-            $formState = array('uid' => $user->uid);
-            user_login_submit(array(), $formState);
+            user_login_finalize($user);
 
             if (is_array($this->authenticationListeners)) {
                 foreach ($this->authenticationListeners as $listener) {
@@ -102,7 +120,7 @@ class DruplashUserService implements UserServiceInterface
      */
     public function isLogged()
     {
-        return user_is_logged_in();
+        return \Drupal::currentUser()->isAuthenticated();
     }
 
     /**
@@ -112,7 +130,7 @@ class DruplashUserService implements UserServiceInterface
      */
     public function redirectNotLogged()
     {
-        drupal_access_denied();
+        throw new \Exception('redirectNotLogged is deprecated and not used in Drupal 8');
     }
 
     /**
@@ -137,7 +155,7 @@ class DruplashUserService implements UserServiceInterface
      */
     public function getUserId()
     {
-        return $GLOBALS['user']->uid;
+        return \Drupal::currentUser()->id();
     }
 
     /**
@@ -148,7 +166,7 @@ class DruplashUserService implements UserServiceInterface
     public function getUserLogin()
     {
         if ($this->getUserId()) {
-            return $GLOBALS['user']->name;
+            return \Drupal::currentUser()->getAccountName();
         } else {
             return null;
         }
@@ -162,7 +180,7 @@ class DruplashUserService implements UserServiceInterface
     public function getLoggedUser()
     {
         if ($this->getUserId()) {
-            return new DruplashUser($GLOBALS['user']);
+            return new DruplashUser(\Drupal::currentUser());
         } else {
             return null;
         }

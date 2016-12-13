@@ -6,27 +6,12 @@ If you have a project developed with Splash, you can completely reuse your code,
 
 To get started, you first need to set up your environment.
 
-Use this *composer.json* file to install an environment with Drupal and Druplash.
+Install
+-------
 
-	{
-	    "require": {
-	        "thecodingmachine/drupal": "~7.18",
-	        "mouf/integration.drupal.druplash": "7.*"
-	    },
-	    "autoload": {
-	        "psr-0": {
-	            "Test": "sites/all/custom"
-	        }
-	    },
-	    "minimum-stability": "dev",
-	    "extra": {
-	        "installer-paths": {
-	            "sites/all/modules/druplash/": ["mouf/integration.drupal.druplash-drupalmodule"]
-	        }
-	    }
-	}
-
-Note: if you want to install Druplash in an existing Drupal, remove the *thecodingmachine/drupal*.
+```sh
+composer require mouf/integration.drupal.druplash ^8.0
+ ```
 
 Your packages are downloaded? Have a quick look at the [installation guide](doc/install.md).
 

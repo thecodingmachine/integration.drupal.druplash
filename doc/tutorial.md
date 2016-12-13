@@ -7,12 +7,12 @@ Creating a controller
 ---------------------
 
 The first thing you will want to do in Druplash is to create your controller, to display a web page.
-If you are not familiar with Splash controllers, start by [reading this page about Splash controllers](https://github.com/thecodingmachine/mvc.splash/blob/4.0/doc/writing_controllers.md).
+If you are not familiar with Splash controllers, start by [reading this page about Splash controllers](https://github.com/thecodingmachine/mvc.splash-common/blob/8.0/doc/writing_controllers_manually.md).
 
 Creating a controller in Druplash is similar to creating a controller in Splash:
 
 - Step 1: Create the controller class, with the action
-- Step 2: Create an instance of the class in Mouf
+- Step 2: Create an instance of the class in the Drupal container (you can use *.services.yml files or container-interop/service-providers) for this
 - Step 3: Clear Drupal's cache (only Step 3 is different, since it is Drupal's own cache that you must purge)
 
 The controller class
@@ -22,49 +22,75 @@ Here is a sample controller class you might use:
 
 ```php
 <?php  
-namespace Test;
+namespace Test\Controllers;
 
-use Mouf\Html\HtmlElement\HtmlBlock;
+use Mouf\Mvc\Splash\Annotations\URL;
 use Mouf\Html\Template\TemplateInterface;
-use Mouf\Mvc\Splash\Controllers\Controller;
+use Mouf\Html\HtmlElement\HtmlBlock;
+use \Twig_Environment;
+use Mouf\Html\Renderer\Twig\TwigTemplate;
+use Mouf\Mvc\Splash\HtmlResponse;
+use Zend\Diactoros\Response\JsonResponse;
 
-class MyController extends Controller {
-	
-	/**
-	 *
-	 * @var HtmlBlock
-	 */
-	public $content;
-	
-	/**
-	 * 
-	 * @var TemplateInterface
-	 */
-	public $template;
-	
-	protected $echo;
-	
-	/**
-	 * By calling the template's toHtml method, we render the content block
-	 * into Drupal's theme.
-	 * 
-	 * @URL /helloworld
-	 */
-	public function helloworld($echo = '') {
-		$this->echo = $echo;
-		$this->content->addFile(__DIR__."/../../views/helloworld.php", $this);
-		$this->template->toHtml();
-	}
+class MyController {
 
-	/**
-	 * Just echoing some text will not trigger Drupal's template rendering.
-	 * This is particularly useful for Ajax calls.
-	 * 
-	 * @URL /helloworld_ajax
-	 */
-	public function helloworld2() {
-		echo json_encode(array('hello'=>'world'));
-	}
+    /**
+     * The template used by this controller.
+     * @var TemplateInterface
+     */
+    private $template;
+
+    /**
+     * The main content block of the page.
+     * @var HtmlBlock
+     */
+    private $content;
+
+    /**
+     * The Twig environment (used to render Twig templates).
+     * @var Twig_Environment
+     */
+    private $twig;
+
+    /**
+     * Controller's constructor.
+     * @param TemplateInterface $template The template used by this controller
+     * @param HtmlBlock $content The main content block of the page
+     * @param Twig_Environment $twig The Twig environment (used to render Twig templates)
+     */
+    public function __construct(TemplateInterface $template, HtmlBlock $content, Twig_Environment $twig) {
+        $this->template = $template;
+        $this->content = $content;
+        $this->twig = $twig;
+    }
+
+    /**
+     * This method will be called when we access the /helloworld URL.*
+     * It accepts an optional "echo" parameter.
+     * 
+     * @URL("/helloworld")
+     */
+    public function helloworld($echo = '') {
+        // Typical code to access database goes here.
+
+        // We declare the view, and bind it to the "content" block.
+        // The view is declared in a Twig file.
+        // Let's add the twig file to the template.
+        $this->content->addHtmlElement(new TwigTemplate($this->twig, 'views/myview.twig', ["echo"=>$echo]));
+
+        // Finally, we draw the template.
+        return new HtmlResponse($this->template);
+    }
+
+    /**
+     * Just echoing some text will output the text directly.
+     * This is useful for Ajax calls.
+     * 
+     * @URL("/helloworld_ajax")
+     */
+    public function helloworld2() {
+        return new JsonResponse(array('hello'=>'world'));
+    }
 }
 ```
 
@@ -76,201 +102,106 @@ migrate a Splash application in Druplash without changing your code!
 
 Of course, we need the "view" file associated with this controller.
 
-*helloworld.php*
-```php
-<?php  
-/* @var $this Test\MyController */
-?>
+**views/myview.twig**
+```twig
 <h1>Hello world!</h1>
-<p>Echo: <?php echo $this->echo; ?>
+<p>echo: {{ echo }}</p>
 ```
+
+Note: Drupal looks for Twig files from the web root of Drupal. So if your web-root is the "web" directory, you should put your Twig file in `web/views/myview.twig`.
 
 Step 2: create an instance of the controller
 --------------------------------------------
 
-So far, we have referenced the class in Mouf, but a class is useless if we do not create an instance of it.
+So far, we have created a class, but a class is useless if Splash cannot get an instance of it from the container.
 
-- In the Mouf interface, click the "Instances / Create a new instance" menu
-- Choose a name for your instance. For instance: "myController".
-- Select your class in the drop-down (MyController)
-- Click the "Create" button
+Druplash will analyze all services in the Drupal container and find controllers in the container by itself. All you have to do is to declare your controller in the Drupal container. 
 
-Step 3: bind the instances
---------------------------
+To do so, you have 2 options.
 
-Now, we must fill the *template* and the *content* properties with instances.
+### Option 1: the Drupal way
 
- - The *template* property should always be bound to the "drupalTemplate" instance. This instance represents the Drupal theme, and calling the *toHtml()* method of the "drupalTemplate" triggers the rendering of the Drupal theme.
- - The *content* property should always be bound to the "block.content" instance. This instance represents the central part of your theme (where Drupal nodes are displayed).
+Create a module, and in your module, add a *.services.yml file:
+
+**my_module.services.yml**
+```yml
+services:
+  test_controller:
+    class: Test\Controllers\MyController
+```
+
+### Option 2: the container-interop way
+
+Alternatively, you can create a container-interop service provider and declare your controller in this service provider.
+Container-interop ServiceProviders are portable and can be used across many frameworks so your code stays portable.
  
-After configuration, you should see something similar to this:
+Create a service-provider:
 
-![Controller bindings](https://raw.github.com/thecodingmachine/integration.drupal.druplash/7.0/doc/images/controller_bindings.png)
+```php
+<?php
+namespace Test\DI;
 
-Step 4: clear Drupal's cache and test
+use Interop\Container\ContainerInterface;
+use Interop\Container\ServiceProvider;
+use Mouf\Html\Template\TemplateInterface;
+use Test\Controllers\TestController;
+
+class TestServiceProvider implements ServiceProvider
+{
+    public function getServices()
+    {
+        return [
+            // This factory creates the controller
+            TestController::class => function(ContainerInterface $container) {
+                return new TestController($container->get(TemplateInterface::class), $container->get('content.block'), , $container->get('twig'));
+            }
+        ];
+    }
+}
+```
+
+Declare the service provider so that Drupal can find it:
+
+- create a `service-providers.php` file at the web root
+- in this file, add the following content:
+
+```php
+<?php
+return [
+    'service-providers' => [
+        \Test\DI\TestServiceProvider::class
+    ],
+    'puli' => false
+];
+```
+
+Step 3: clear Drupal's cache and test
 -------------------------------------
 
 Now, our instance is created. All that remains to do is to clear the Drupal cache (in the "Performance" section of Drupal admin).
 Finally, we can test. Go to <code>http://[server]/[drupal_directory]/helloworld?echo=42</code>. You should see a page with "Hello world!" displayed.
 
-Step 5: Setting the page title
+Step 4: Setting the page title
 ------------------------------
 
-In order to set the page title, you have 2 possible methods: using the setTitle method on the template, or using the @Title annotation in the controller.
-
-Here is an example using the @Title annotation:
+In order to set the page title, you can use the `setTitle` method on the template.
 
 ```php
-class HomeController extends Controller {
-	...
-
-	/**
-	 * A sample page.
-	 * 
-	 * @URL detailpage
-	 * @Title This is my page title.
-	 */
-	public function details($id) {
-		// Here is my page.
-	}
-}
+$this->template->setTitle("My Title");
 ```
 
-And here is an example using the setTitle method:
+Step 5: Adding libraries
+------------------------
+
+Unlike other Mouf libraries, Druplash 8 does not support the use of the WebLibraryManager (Drupal 8 does not offer a proper way to add JS/CSS files on the fly).
+
+Instead, if you want to add JS/CSS files to your page, you will need to create a [dedicated Drupal library](https://www.drupal.org/docs/8/creating-custom-modules/adding-stylesheets-css-and-javascript-js-to-a-drupal-8-module) (you might need to create a Drupal module to host your library if you haven't one already).
+
+Then, to add the library, use:
 
 ```php
-class HomeController extends DrupalController {
-	...
-
-	/**
-	 * 
-	 * @var TemplateInterface
-	 */
-	public $template;
-
-	/**
-	 * A sample page.
-	 * 
-	 * @URL detailpage
-	 */
-	public function details($id) {
-		$this->template->setTitle("My Title");
-		// Here is my page.
-	}
-}
+$this->template->addLibrary("my_module_name/my_library_name");
 ```
-
-If you can choose between setTitle and @Title, please choose the annotation.
-Indeed, some blocks relying an the page title might be displayed before you enter in the controller's method.
-For instance, if you have a bread-crumb relying on the page's title, the @Title might be your only option,
-since the breadcrumb might be called before the setTitle function.
-
-Step 6: overriding the Drupal Menu settings
--------------------------------------------
-
-Sometimes, you may want to set additional settings into Drupal's menu settings.
-To do so, there is a @DrupalMenuSettings annotation defined by a JSON object in value. The structure of the object will map the menu item structure :
-```php
-	
-	/**
-	 * @URL my/url
-	 * @Action
-	 * @DrupalMenuSettings{"type":"MENU_LOCAL_TASK","weight":10}
-	 */
-	public function myAction($jour = null, $typeCollect = null, $fonction = null) {
-		...
-	}	
-```
-*Example*, you may want your Action to be represented as a drupal Tab.
-By default, the menu type is MENU_VISIBLE_IN_BREADCRUMB, that correponds to a simple URL. In order to 
-get a Drupal tab for this actions, you should use a menu type MENU_LOCAL_TASK or MENU_DEFAULT_LOCAL_TASK.
-
-Symfony HttpFoundation support
-------------------------------
-
-Since Druplash 7.3, support for [Symfony HttpFoundation component](http://symfony.com/doc/current/components/http_foundation/index.html) has been added.
-
-This means that Druplash will automatically inject a `Request` object into your action if your action expects a `Request` object 
-(just like the way it works in Symfony 2):
-
-```php
-use Symfony\Component\HttpFoundation\Request;
-...
-
-/**
- * My action with the request object filled
- *
- * @URL /test
- * @param Request $request
- */
-public function my_action(Request $request) {
-	$param = $request->get('param');
-	...
-} 
-```
-
-Note: you should use the `Request` object instead of accessing directly `$_FILES`, `$_SERVER`, `$_COOKIES`, or HTTP headers.
-
-You can also return a [Symfony 2 Response object](http://symfony.com/fr/doc/current/components/http_foundation/introduction.html#reponse)
-
-Therefore, you can write things like:
-
-```php
-<?php
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
-
-class MyController extends Controller {
-	
-	/**
-	 * Returning a Response object
-	 *
-	 * @URL /myurl1
-	 */
-	public function test1() {
-		 return new Response('Hello World', 200, array('content-type' => 'text/html'));
-	}
-	
-	/**
-	 * Returning a JSON response
-	 *
-	 * @URL /myjsonurl
-	 */
-	public function testJson() {
-		 return new JsonResponse({ "status" => "ok", "message" => "Hello world!" });
-	}
-}
-?>
-```
-
-Typically, in Druplash, you will want to output the Drupal template object. You can easily output templates (or any object
-implementing the [`HtmlElementInterface`](http://mouf-php.com/packages/mouf/html.htmlelement/README.md) using the `HtmlResponse` object:
-
-```php
-<?php
-use Mouf\Mvc\Splash\HtmlResponse;
-
-class MyController extends Controller {
-    /**
-     * @var DrupalTemplate
-     */
-    private $template;
-	
-	...
-	
-	/**
-	 * Returning a Response object
-	 *
-	 * @URL /test_template
-	 */
-	public function test1() {
-	    // do stuff
-		return new HtmlResponse($this->template);
-	}
-}
-?>
-```
-
 
 In the next tutorial
 --------------------

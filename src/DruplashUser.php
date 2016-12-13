@@ -1,9 +1,10 @@
 <?php
 
 
-namespace Mouf\Integration\Drupal\Druplash;
+namespace Drupal\druplash;
 
 
+use Drupal\user\Entity\User;
 use Mouf\Security\UserService\UserInterface;
 
 class DruplashUser implements UserInterface
@@ -13,7 +14,7 @@ class DruplashUser implements UserInterface
     /**
      * @param $drupalUser
      */
-    public function __construct($drupalUser)
+    public function __construct(User $drupalUser)
     {
         $this->drupalUser = $drupalUser;
     }
@@ -26,7 +27,7 @@ class DruplashUser implements UserInterface
      */
     public function getId()
     {
-        return $this->drupalUser->uid;
+        return $this->drupalUser->id();
     }
 
     /**
@@ -36,6 +37,6 @@ class DruplashUser implements UserInterface
      */
     public function getLogin()
     {
-        return $this->drupalUser->name;
+        return $this->drupalUser->getUsername();
     }
 }
