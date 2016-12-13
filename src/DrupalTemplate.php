@@ -63,14 +63,15 @@ class DrupalTemplate extends BaseTemplate
         $content = ob_get_clean();
 
         $this->arrayRenderCaller->getResponse(array(
-            '#type' => 'markup',
+            '#theme' => 'druplash_renderer',
             '#title' => $this->getTitle(),
-            '#markup' => $content,
+            '#content' => $content,
+            '#cache' => ['max-age' => 0 ],
             '#attached' => [
                 'library' => $this->libraries
             ]
         ));
-
+        
         echo 'template';
     }
 

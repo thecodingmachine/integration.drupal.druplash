@@ -20,3 +20,14 @@ function druplash_page_attachments(array &$page) {
     ];
     //exit;
 }
+
+
+function druplash_theme($existing, $type, $theme, $path) {
+    return ['druplash_renderer' =>
+        [
+            'variables' => [
+                'content' => ''
+            ]
+        ]
+    ];
+}
