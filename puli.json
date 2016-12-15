@@ -4,7 +4,7 @@
     "bindings": {
         "c0277e6c-4002-4716-862f-83dcb53580fb": {
             "_class": "Puli\\Discovery\\Binding\\ClassBinding",
-            "class": "Drupal\\druplash\\DruplashServiceProvider",
+            "class": "Drupal\\druplash\\DruplashUniversalServiceProvider",
             "type": "container-interop/service-provider"
         }
     },

@@ -8,7 +8,7 @@ use Mouf\Mvc\Splash\Routers\SplashDefaultRouter;
 use Mouf\Mvc\Splash\Services\ControllerAnalyzer;
 use Mouf\Mvc\Splash\Services\ControllerRegistry;
 
-class DruplashServiceProvider implements ServiceProvider
+class DruplashUniversalServiceProvider implements ServiceProvider
 {
     /**
      * Returns a list of all container entries registered by this service provider.
