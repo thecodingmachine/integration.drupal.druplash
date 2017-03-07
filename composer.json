@@ -24,7 +24,7 @@
 		"thecodingmachine/drupal-service-provider-bridge": "^0.3",
 		"mouf/html.template.templateinterface" : "^2.1",
 		"mouf/html.utils.weblibrarymanager" : "^3.0",
-		"mouf/mvc.splash-common" : "^8.0",
+		"mouf/mvc.splash-common" : "^8.2",
 		"container-interop/service-provider": "^0.3",
 		"thecodingmachine/stash-universal-module": "^1.0",
 		"mouf/security.rightsservice-splash": "^8.0",
