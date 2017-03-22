@@ -20,7 +20,7 @@
 		"composer/installers" : "*",
 		"mouf/security.rightsservice-splash" : "~4.0",
 		"mouf/security.rightsservice" : "~2.0",
-		"mouf/utils.session.session-manager" : "~2.0",
+		"mouf/utils.session.session-manager" : "~2.0 || ~3.0",
 		"php" : ">=5.3.0",
 		"mouf/integration.drupal.druplash-drupalmodule" : "~7.4",
 		"mouf/html.template.templateinterface" : "~2.1",
