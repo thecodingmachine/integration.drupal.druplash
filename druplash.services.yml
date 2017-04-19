@@ -17,3 +17,10 @@ services:
     class: Drupal\druplash\DruplashRightService
   mouf\security\rightsservice\rightsserviceinterface:
     alias: drupal\druplash\druplashrightservice
+  mouf\security\unauthorizedmiddleware:
+    class: Mouf\Security\UnauthorizedMiddleware
+    arguments: ['@drupal\druplash\druplashuserservice', '@mouf\security\controllers\logincontroller']
+  drupal\druplash\druplashlogincontroller:
+    class: Drupal\druplash\DruplashLoginController
+  mouf\security\controllers\logincontroller:
+    alias: drupal\druplash\druplashlogincontroller
