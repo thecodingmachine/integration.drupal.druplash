@@ -275,11 +275,17 @@ class Druplash
             header_remove('Cache-Control');
             header_remove('ETag');
 
-            $response = SplashUtils::buildControllerResponse(
+            try {
+                $response = SplashUtils::buildControllerResponse(
                     function () use ($controller, $method, $args) {
                         return call_user_func_array(array($controller, $method), $args);
                     }
-            );
+                );
+            } catch (\PDOException $exception) {
+                // Drupal 7 has the very bad habit of not logging PDOExceptions.
+                // So if our controller throws a PDOException, we wrap it into another exception.
+                throw new PDOWrappedException($exception);
+            }
 
             $drupalTemplate = $this->drupalTemplate;
 
