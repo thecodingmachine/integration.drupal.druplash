@@ -7,7 +7,7 @@ use Mouf\Mvc\Splash\Services\ControllerAnalyzer;
 use Mouf\Mvc\Splash\Services\ControllerDetector;
 
 /**
- * This class scans the Mouf container in order to find all instances that point to classes containing a @URL or @Action annotation.
+ * This class scans the Drupal container in order to find all instances that point to classes containing a @URL or @Action annotation.
  * Use it to discover instances.
  */
 class DruplashControllerExplorer implements ControllerDetector
@@ -37,6 +37,11 @@ class DruplashControllerExplorer implements ControllerDetector
             try {
                 $instance = $container->get($instanceName);
             } catch (\Exception $e) {
+                // Let's do some heuristics: if instance name contains word "controller" let's throw.
+                if (strpos($instanceName, 'controller') !== false) {
+                    throw $e;
+                }
+
                 // Let's ignore any service failing to be created.
                 continue;
             }
