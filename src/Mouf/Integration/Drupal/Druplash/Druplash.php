@@ -179,7 +179,9 @@ class Druplash
     public static function executeAction($actions)
     {
         $httpMethod = $_SERVER['REQUEST_METHOD'];
-
+        if ($httpMethod === 'OPTIONS') {
+            return;
+        }
         if (isset($actions[$httpMethod])) {
             $action = $actions[$httpMethod];
         } elseif (isset($actions['default'])) {
