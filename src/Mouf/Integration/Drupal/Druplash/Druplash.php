@@ -200,7 +200,14 @@ class Druplash
     protected static function callAction($controller, $method, $urlParameters, $parameters, $filters)
     {
         $request = Request::createFromGlobals();
-
+        if (0 === strpos($request->headers->get('Content-Type'), 'application/json')) {
+            $data = json_decode($request->getContent(), true);
+            if ($data === null
+                && json_last_error() !== JSON_ERROR_NONE) {
+                throw new \Exception('Invalid JSON message sent in POST content');
+            }
+            $request->request->replace(is_array($data) ? $data : array());
+        }
         // Default action is "defaultAction" or "index"
         if (empty($method)) {
             // Support for both defaultAction, and if not found "index" method.
