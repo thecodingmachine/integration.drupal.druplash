@@ -4,7 +4,6 @@ namespace Mouf\Integration\Drupal\Druplash;
 
 use Mouf\Mvc\Splash\Services\SplashRequestContext;
 use Mouf\Mvc\Splash\Services\SplashRoute;
-use Mouf\Mvc\Splash\Controllers\Controller;
 use Mouf\Mvc\Splash\Utils\ApplicationException;
 use Mouf\Reflection\MoufReflectionMethod;
 use Mouf\Reflection\MoufReflectionClass;
