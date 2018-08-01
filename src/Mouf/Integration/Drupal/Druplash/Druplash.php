@@ -4,12 +4,10 @@ namespace Mouf\Integration\Drupal\Druplash;
 
 use Mouf\Mvc\Splash\Services\SplashRequestContext;
 use Mouf\Mvc\Splash\Services\SplashRoute;
-use Mouf\Mvc\Splash\Controllers\Controller;
 use Mouf\Mvc\Splash\Utils\ApplicationException;
 use Mouf\Reflection\MoufReflectionMethod;
 use Mouf\Reflection\MoufReflectionClass;
 use Mouf\Reflection\MoufPhpDocComment;
-use Mouf\Reflection\MoufReflectionProxy;
 use Mouf\Mvc\Splash\Utils\SplashException;
 use Mouf\Mvc\Splash\Services\SplashUtils;
 use Mouf\MoufManager;
@@ -321,7 +319,7 @@ class Druplash
     {
         $moufManager = MoufManager::getMoufManager();
 
-        $instanceNames = MoufReflectionProxy::getInstances('Mouf\\Integration\\Drupal\\Druplash\\DrupalDynamicBlockInterface', false);
+        $instanceNames = $moufManager->findInstances('Mouf\\Integration\\Drupal\\Druplash\\DrupalDynamicBlockInterface');
 
         $blocks = array();
 
