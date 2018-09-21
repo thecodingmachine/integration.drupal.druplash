@@ -38,7 +38,7 @@ class DruplashControllerExplorer implements ControllerDetector
                 $instance = $container->get($instanceName);
             } catch (\Exception $e) {
                 // Let's do some heuristics: if instance name contains word "controller" let's throw.
-                if (strpos($instanceName, 'controller') !== false) {
+                if (strpos(strtolower($instanceName), 'controller') !== false) {
                     throw $e;
                 }
 
